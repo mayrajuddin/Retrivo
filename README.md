@@ -1,3 +1,5 @@
+# Retrivo 
+This platform is designed for the students, faculty members, and staff of the campus to help recover lost and found items. If someone loses a personal belonging, such as a bag, ID card, wallet, or any other valuable item, they can post its details on the website. Similarly, anyone who finds a lost item can create a post with the relevant information. The rightful owner can then claim the item by providing appropriate proof of ownership, making the recovery process simple, secure, and efficient.
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
