@@ -49,7 +49,7 @@ const Header = () => {
           {/* <button className="btn btn-ghost btn-circle">
             <Search className="h-6 w-6" />
           </button> */}
-          <Link to={'/login'} className="uppercase text-[#F4F5F7] bg-[#0F6A43] px-3 py-2 rounded font-medium">
+          <Link to={'/register'} className="uppercase text-[#F4F5F7] bg-[#0F6A43] px-3 py-2 rounded font-medium">
             signup
           </Link>
         </div>

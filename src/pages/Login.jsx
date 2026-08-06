@@ -26,7 +26,7 @@ const Login = () => {
                             </div>
                             <button type='submit' className='btn btn-secondary w-full mt-4 text-lg'>Login</button>
                         </form>
-                        <p className="text-center capitalize text-lg">new to Pcmart ? <Link to="/register" className=''><strong>register</strong></Link></p>
+                        <p className="text-center capitalize text-lg">new to Retrivo ? <Link to="/register" className=''><strong>register</strong></Link></p>
                         <div className="px-6">
                             <button  type='button' className='btn btn-secondary font-bold btn-outline w-full mt-4  text-lg'> <FaGoogle className='mr-3' />  google</button>
                         </div>
