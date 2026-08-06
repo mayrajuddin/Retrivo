@@ -1,9 +1,10 @@
 import { Search } from "lucide-react";
 import { Link } from "react-router";
+import logo from '../assets/retrivo_logo-withoutBG.png'
 
 const Header = () => {
   const navLinks= <>
-    <Link to='/' className="md:text-lg">Home</Link>
+    <Link to='/' className="md:text-lg text-[#0B2D5B]">Home</Link>
     <Link to='/' className="md:text-lg">Contact</Link>
     <Link to='/about' className="md:text-lg">About</Link>
   </>
@@ -17,10 +18,10 @@ const Header = () => {
         ></label>
         <div className="collapse-title navbar">
           <div className="navbar-start">
-            <a className="btn text-xl capitalize">retrivo</a>
+            <a className="pointer"><img src={logo} alt="logo" className="w-32 "/></a>
           </div>
           <div className="navbar-center hidden lg:flex">
-            <ul className="menu menu-horizontal px-1 gap-4">
+            <ul className="menu menu-horizontal px-1 gap-4 font-bold uppercase">
               {navLinks}
             </ul>
           </div>

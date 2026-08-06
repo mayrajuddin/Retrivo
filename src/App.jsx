@@ -5,9 +5,8 @@ function App() {
   
 
   return (
-    <> <h2>Retrivo</h2>
-    
-      <h3>Hello</h3>
+    <>
+      <h2>Retrivo</h2>
     </>
   )
 }
