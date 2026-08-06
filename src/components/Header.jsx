@@ -32,9 +32,9 @@ const Header = () => {
               {navLinks}
             </ul>
           </div>
-          <a className="hidden lg:block cursor-pointer">
+          <Link to={'/'} className="hidden lg:block " >
             <img src={logo} alt="logo" className="w-30 " />
-          </a>
+          </Link>
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1 font-bold uppercase text-gray-600  gap-4">
@@ -43,9 +43,9 @@ const Header = () => {
         </div>
         <div className="navbar-end">
           {/* <a className="btn">Button</a> */}
-          <a className="lg:hidden cursor-pointer">
+          <Link to={'/'} className="lg:hidden cursor-pointer">
             <img src={logo} alt="logo" className="w-28 " />
-          </a>
+          </Link>
           {/* <button className="btn btn-ghost btn-circle">
             <Search className="h-6 w-6" />
           </button> */}

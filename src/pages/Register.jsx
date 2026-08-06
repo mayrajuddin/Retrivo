@@ -5,7 +5,7 @@ import { Link } from "react-router";
 const Register = () => {
   return (
     <div className="bg-[#F5F5F5] min-h-screen justify-center flex flex-col items-center">
-      <div className="hero bg-base-200 w-3/4 p-20">
+      <div className="hero bg-base-200 w-3/4 py-18 px-20">
         <div className="hero-content grid-cols-1 grid md:grid-cols-2 ">
           <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl transition duration-300 ease-in-out   border-r-white border-r-2 hover:border-[#1E2B24]">
             <div className="card-body">
@@ -25,20 +25,21 @@ const Register = () => {
               </fieldset>
               <div><p className="text-center text-sm "> Or continue with</p></div> 
               <div className="flex justify-center items-center gap-3">
-                   <a rel="#" className="cursor-pointer border border-[#146B46] py-2 px-9 rounded-xl hover:bg-gray-200"><FaGoogle size={18} className="text-[#1E2B24]"/></a> 
-                   <a rel="#" className="cursor-pointer border border-[#146B46] py-2 px-9 rounded-xl hover:bg-gray-200"><FaFacebook size={18} className="text-[#1E2B24]"/></a> 
+                   <a rel="#" className="cursor-pointer border border-[#146B46] py-2 px-8 rounded-xl hover:bg-gray-200"><FaGoogle size={17} className="text-[#1E2B24]"/></a> 
+                   <a rel="#" className="cursor-pointer border border-[#146B46] py-2 px-8 rounded-xl hover:bg-gray-200"><FaFacebook size={17} className="text-[#1E2B24]"/></a> 
               </div>
+              <div className="text-sm text-gray-500 text-center py-3"><p>Already have an account? <Link to={'/login'} className="link">login</Link></p></div>
             </div>
           </div>
           <div className="text-center lg:text-left">
             <h1 className="text-5xl font-bold capitalize text-[#146B46]">wellcome to retrivo</h1>
             <p className="py-6 text-xl">
-              Find. Report. Retrieve.
+              Find. Report and Retrieve.
             </p>
           </div>
         </div>
       </div>
-      <div className="text-center md:mt-9 text-sm">
+      <div className="text-center md:mt-6 text-sm">
         <p>
           By clicking continue, you agree to our <Link to={'/'} className="link"> Terms of Service </Link> and <Link to={'/'} className="link">Privacy Policy</Link>.
         </p>
