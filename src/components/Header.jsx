@@ -1,46 +1,57 @@
-import { Search } from "lucide-react";
+// import { Menu, Search } from "lucide-react";
 import { Link } from "react-router";
-import logo from '../assets/retrivo_logo-withoutBG.png'
+import logo from "../assets/retrivo_logo.png";
+import { RiMenu2Fill } from "react-icons/ri";
 
 const Header = () => {
-  const navLinks= <>
-    <Link to='/' className="md:text-lg text-[#0B2D5B]">Home</Link>
-    <Link to='/' className="md:text-lg">Contact</Link>
-    <Link to='/about' className="md:text-lg">About</Link>
-  </>
+  const navLinks = (
+    <>
+      <Link to="/" className="md:text-lg lg:hover:text-[#146B46]">
+        Home
+      </Link>
+      <Link to="/" className="md:text-lg lg:hover:text-[#146B46]">
+        Contact
+      </Link>
+      <Link to="/about" className="md:text-lg lg:hover:text-[#146B46]">
+        About
+      </Link>
+    </>
+  );
   return (
     <>
-      <div className="max-lg:collapse bg-base-200 lg:mb-48 shadow-sm w-full rounded-md">
-        <input id="navbar-1-toggle" className="peer hidden" type="checkbox" />
-        <label
-          htmlFor="navbar-1-toggle"
-          className="fixed inset-0 hidden max-lg:peer-checked:block"
-        ></label>
-        <div className="collapse-title navbar">
-          <div className="navbar-start">
-            <a className="pointer"><img src={logo} alt="logo" className="w-32 "/></a>
-          </div>
-          <div className="navbar-center hidden lg:flex">
-            <ul className="menu menu-horizontal px-1 gap-4 font-bold uppercase">
+      <div className="navbar bg-[#F4F5F7] shadow-sm">
+        <div className="navbar-start">
+          <div className="dropdown">
+            <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">             
+              <RiMenu2Fill className="h-5 w-5"/>
+            </div>
+            <ul
+              tabIndex="-1"
+              className="menu menu-sm dropdown-content bg-base-100 font-bold uppercase text-gray-800  rounded-box z-1 mt-3 w-52 p-2 shadow"
+            >
               {navLinks}
             </ul>
           </div>
-          <div className="navbar-end">
-            <input
-              type="text"
-              placeholder="Search"
-              className="hidden input w-64 lg:w-auto"
-            />
-            <button className="btn btn-ghost btn-circle">
-              <Search className="h-6 w-6" />
-            </button>
-          </div>
+          <a className="hidden lg:block cursor-pointer">
+            <img src={logo} alt="logo" className="w-30 " />
+          </a>
         </div>
-
-        <div className="collapse-content lg:hidden z-1">
-          <ul className="menu">
+        <div className="navbar-center hidden lg:flex">
+          <ul className="menu menu-horizontal px-1 font-bold uppercase text-gray-600  gap-4">
             {navLinks}
           </ul>
+        </div>
+        <div className="navbar-end">
+          {/* <a className="btn">Button</a> */}
+          <a className="lg:hidden cursor-pointer">
+            <img src={logo} alt="logo" className="w-28 " />
+          </a>
+          {/* <button className="btn btn-ghost btn-circle">
+            <Search className="h-6 w-6" />
+          </button> */}
+          <Link to={'/login'} className="uppercase text-[#F4F5F7] bg-[#0F6A43] px-3 py-2 rounded font-medium">
+            signup
+          </Link>
         </div>
       </div>
     </>
