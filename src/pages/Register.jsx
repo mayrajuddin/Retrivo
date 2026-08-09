@@ -1,21 +1,22 @@
 // import { FaGoogle } from "react-icons/fa";
 import { FaFacebook, FaGoogle } from "react-icons/fa6";
+import BGImg from '../assets/logBG.jpg'
 import { Link } from "react-router";
 
 const Register = () => {
   return (
-    <div className="bg-[#F5F5F5] min-h-screen justify-center flex flex-col items-center">
-      <div className="hero bg-base-200 w-3/4 py-18 px-20">
+    <div className="bg-[#F5F5F5] min-h-screen justify-center flex flex-col items-center bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${BGImg})`}}>
+      <div className="hero bg-base-200/50 w-3/4 py-18 px-20 rounded-lg">
         <div className="hero-content grid-cols-1 grid md:grid-cols-2 ">
-          <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl transition duration-300 ease-in-out   border-r-white border-r-2 hover:border-[#1E2B24]">
+          <div className="card bg-base-200 w-full max-w-sm shrink-0 shadow-2xl transition duration-300 ease-in-out border-r-base-200 border-r-2 hover:border-[#1E2B24]">
             <div className="card-body">
               <fieldset className="fieldset">
                 <label className="label">Email</label>
-                <input type="email" className="input focus:outline-none border-[#E4F5EC] focus:border-[#1F2430]" placeholder="Email" />
+                <input type="email" className="input focus:outline-none border-[#afccbc] focus:border-[#1F2430]" placeholder="Email" />
                 <label className="label">Password</label>
                 <input
                   type="password"
-                  className="input focus:outline-none border-[#E4F5EC] focus:border-[#1F2430]"
+                  className="input focus:outline-none border-[#afccbc] focus:border-[#1F2430]"
                   placeholder="Password"
                 />
                 <div>
@@ -32,15 +33,15 @@ const Register = () => {
             </div>
           </div>
           <div className="text-center lg:text-left">
-            <h1 className="text-5xl font-bold capitalize text-[#146B46]">wellcome to retrivo</h1>
-            <p className="py-6 text-xl">
-              Find. Report and Retrieve.
+            <h1 className="text-5xl font-bold capitalize text-[#146B46]">Join Retrivo Today</h1>
+            <p className="py-6 text-xl text-[#4F4F4F]">
+              Help your campus community recover lost belongings.
             </p>
           </div>
         </div>
       </div>
       <div className="text-center md:mt-6 text-sm">
-        <p>
+        <p className="text-gray-900/50">
           By clicking continue, you agree to our <Link to={'/'} className="link"> Terms of Service </Link> and <Link to={'/'} className="link">Privacy Policy</Link>.
         </p>
       </div>
