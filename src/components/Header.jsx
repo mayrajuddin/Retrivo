@@ -10,11 +10,18 @@ const Header = () => {
         Home
       </Link>
       <Link to="/" className="md:text-lg lg:hover:text-[#146B46]">
-        Contact
+        Browse items
+      </Link>
+      <Link to="/" className="md:text-lg lg:hover:text-[#146B46]">
+        Report item
+      </Link>
+      <Link to="/" className="md:text-lg lg:hover:text-[#146B46]">
+        How it works
       </Link>
       <Link to="/about" className="md:text-lg lg:hover:text-[#146B46]">
         About
       </Link>
+      {/* Retrivo | Home | Browse Items | Report Item | My Reports | My Claims | Profile| show after login */}
     </>
   );
   return (
@@ -27,7 +34,7 @@ const Header = () => {
             </div>
             <ul
               tabIndex="-1"
-              className="menu menu-sm dropdown-content bg-base-100 font-bold uppercase text-gray-800  rounded-box z-1 mt-3 w-52 p-2 shadow"
+              className="menu menu-sm dropdown-content bg-base-100 font-bold capitalize text-gray-800  rounded-box z-1 mt-3 w-52 p-2 shadow"
             >
               {navLinks}
             </ul>
@@ -37,7 +44,7 @@ const Header = () => {
           </Link>
         </div>
         <div className="navbar-center hidden lg:flex">
-          <ul className="menu menu-horizontal px-1 font-bold uppercase text-gray-600  gap-4">
+          <ul className="menu menu-horizontal px-1 font-bold capitalize text-gray-600  gap-4">
             {navLinks}
           </ul>
         </div>

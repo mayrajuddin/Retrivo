@@ -24,7 +24,7 @@ const Register = () => {
                 </div>
                 <button className="btn bg-[#146B46] mt-4 text-white border-0 capitalize">sign up</button>
               </fieldset>
-              <div><p className="text-center text-sm "> Or continue with</p></div> 
+              <div><p className="text-center text-sm divider"> Or continue with</p></div> 
               <div className="flex justify-center items-center gap-3">
                    <a rel="#" className="cursor-pointer border border-[#146B46] py-2 px-8 rounded-xl hover:bg-gray-200"><FaGoogle size={17} className="text-[#1E2B24]"/></a> 
                    <a rel="#" className="cursor-pointer border border-[#146B46] py-2 px-8 rounded-xl hover:bg-gray-200"><FaFacebook size={17} className="text-[#1E2B24]"/></a> 
