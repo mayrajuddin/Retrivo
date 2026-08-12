@@ -1,5 +1,5 @@
 import Hero from "../../components/Hero";
-import HowItWorks from "../../components/howItWorks";
+import HowItWorks from "../../components/HowItWorks";
 import RecentItems from "../../components/RecentItems";
 
 const Home = () => {
