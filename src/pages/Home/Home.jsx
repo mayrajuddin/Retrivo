@@ -1,4 +1,5 @@
 import Hero from "../../components/Hero";
+import HowItWorks from "../../components/howItWorks";
 import RecentItems from "../../components/RecentItems";
 
 const Home = () => {
@@ -7,6 +8,7 @@ const Home = () => {
             <main>
                 <Hero/>
                 <RecentItems/>
+                <HowItWorks/>
             </main>
         </>
     );
