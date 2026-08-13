@@ -6,6 +6,7 @@ import Register from "../pages/Register";
 import About from "../pages/About";
 import DashboardHome from "../pages/Dashboard/DashboardHome";
 import { itemsLoader } from "./DataLoad/loadData";
+import BrowseItems from "../pages/BrowseItems/BrowseItems";
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ export const router = createBrowserRouter([
         path: "about",
         Component: About,
       },
+      {
+        path: "browse-items",
+        Component: BrowseItems
+      }
     ],
   },
   {

@@ -9,7 +9,7 @@ const Header = () => {
       <Link to="/" className="md:text-lg lg:hover:text-[#146B46]">
         Home
       </Link>
-      <Link to="/" className="md:text-lg lg:hover:text-[#146B46]">
+      <Link to="/browse-items" className="md:text-lg lg:hover:text-[#146B46]">
         Browse items
       </Link>
       <Link to="/" className="md:text-lg lg:hover:text-[#146B46]">

@@ -1,8 +1,8 @@
 import { Suspense, useState } from "react";
-import { ArrowRight, PackageSearch,} from "lucide-react";
+import { ArrowRight, PackageSearch } from "lucide-react";
 import ItemsDetailsModal from "./ItemsDetailsModal";
 import ItemCard from "../common/itemCard";
-const RecentItems = ({items}) => {
+const RecentItems = ({ items }) => {
   // console.log( items);
   const [selectedItem, setSelectedItem] = useState(null);
   const [verificationStep, setVerificationStep] = useState(false);
@@ -84,11 +84,11 @@ const RecentItems = ({items}) => {
         ====================================================== */}
 
         <Suspense fallback={<span> loading....</span>}>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {items.map((item) => (
-            <ItemCard key={item.id} item={item} handleClick={openDetails}/>
-          ))}
-        </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {items.map((item) => (
+              <ItemCard key={item.id} item={item} handleClick={openDetails} />
+            ))}
+          </div>
         </Suspense>
       </div>
 
@@ -97,7 +97,15 @@ const RecentItems = ({items}) => {
       ====================================================== */}
 
       {selectedItem && (
-        <ItemsDetailsModal setVerificationStep={setVerificationStep} isLoggedIn={isLoggedIn} handleVerificationSubmit={handleVerificationSubmit} startVerification={startVerification} verificationStep={verificationStep} closeModal={closeModal} selectedItem={selectedItem} />
+        <ItemsDetailsModal
+          setVerificationStep={setVerificationStep}
+          isLoggedIn={isLoggedIn}
+          handleVerificationSubmit={handleVerificationSubmit}
+          startVerification={startVerification}
+          verificationStep={verificationStep}
+          closeModal={closeModal}
+          selectedItem={selectedItem}
+        />
       )}
     </section>
   );
