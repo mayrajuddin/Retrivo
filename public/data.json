@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "Black Backpack",
+    "category": "Bag",
+    "location": "Campus Area",
+    "exactLocation": "Central Library - 2nd Floor",
+    "date": "Aug 10, 2026",
+    "status": "Found",
+    "reporter": "Rahim Ahmed",
+    "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
+    "description": "A black backpack with a small blue keychain attached to the side. The bag contains some books and personal belongings."
+  },
+  {
+    "id": 2,
+    "name": "Student ID Card",
+    "category": "ID Card",
+    "location": "Campus Area",
+    "exactLocation": "Cafeteria - Ground Floor",
+    "date": "Aug 09, 2026",
+    "status": "Found",
+    "reporter": "Nusrat Jahan",
+    "image": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80",
+    "description": "A student identification card found on campus."
+  },
+  {
+    "id": 3,
+    "name": "Black Wallet",
+    "category": "Wallet",
+    "location": "Campus Area",
+    "exactLocation": "Academic Building - Room 204",
+    "date": "Aug 08, 2026",
+    "status": "Lost",
+    "reporter": "Sakib Hasan",
+    "image": "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80",
+    "description": "A black leather wallet that was lost somewhere around the academic building."
+  },
+  {
+    "id": 4,
+    "name": "Silver Key",
+    "category": "Keys",
+    "location": "Campus Area",
+    "exactLocation": "Main Gate Waiting Area",
+    "date": "Aug 08, 2026",
+    "status": "Found",
+    "reporter": "Tanvir Rahman",
+    "image": "https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=800&q=80",
+    "description": "A silver key found near the campus entrance."
+  },
+  {
+    "id": 5,
+    "name": "Wireless Earbuds",
+    "category": "Electronics",
+    "location": "Campus Area",
+    "exactLocation": "Computer Lab - 3rd Floor",
+    "date": "Aug 07, 2026",
+    "status": "Lost",
+    "reporter": "Afsana Karim",
+    "image": "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?auto=format&fit=crop&w=800&q=80",
+    "description": "Wireless earbuds in a small charging case."
+  },
+  {
+    "id": 6,
+    "name": "Blue Water Bottle",
+    "category": "Personal Item",
+    "location": "Campus Area",
+    "exactLocation": "Sports Ground",
+    "date": "Aug 06, 2026",
+    "status": "Found",
+    "reporter": "Mahin Chowdhury",
+    "image": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=800&q=80",
+    "description": "A blue reusable water bottle found on campus."
+  }
+]

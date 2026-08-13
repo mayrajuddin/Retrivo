@@ -5,19 +5,21 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import About from "../pages/About";
 import DashboardHome from "../pages/Dashboard/DashboardHome";
+import { itemsLoader } from "./DataLoad/loadData";
 
 export const router = createBrowserRouter([
   {
+    id: "root",
     path: "/",
     Component: Root,
+    loader: itemsLoader, 
     children: [
       {
         index: true,
-        path: "/",
         Component: Home,
       },
       {
-        path: "/about",
+        path: "about",
         Component: About,
       },
     ],
