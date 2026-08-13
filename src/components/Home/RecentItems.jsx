@@ -1,7 +1,7 @@
 import { Suspense, useState } from "react";
 import { ArrowRight, PackageSearch } from "lucide-react";
 import ItemsDetailsModal from "./ItemsDetailsModal";
-import ItemCard from "../common/itemCard";
+import ItemCard from "../common/ItemCard";
 const RecentItems = ({ items }) => {
   const [selectedItem, setSelectedItem] = useState(null);
 
