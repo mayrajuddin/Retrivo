@@ -7,26 +7,33 @@ import About from "../pages/About";
 import DashboardHome from "../pages/Dashboard/DashboardHome";
 import { itemsLoader } from "./DataLoad/loadData";
 import BrowseItems from "../pages/BrowseItems/BrowseItems";
+import ReportItem from "../pages/ReportItem/ReportItem";
+import ErrorPage from "../pages/ErrorPage";
 
 export const router = createBrowserRouter([
   {
     id: "root",
     path: "/",
     Component: Root,
-    loader: itemsLoader, 
+    loader: itemsLoader,
+    errorElement: <ErrorPage />,  
     children: [
       {
         index: true,
         Component: Home,
       },
       {
+        path: "browse-items",
+        Component: BrowseItems
+      },
+      {
+        path: "report-item",
+        Component: ReportItem,
+      },
+      {
         path: "about",
         Component: About,
       },
-      {
-        path: "browse-items",
-        Component: BrowseItems
-      }
     ],
   },
   {

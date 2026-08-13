@@ -12,11 +12,8 @@ const Header = () => {
       <Link to="/browse-items" className="md:text-lg lg:hover:text-[#146B46]">
         Browse items
       </Link>
-      <Link to="/" className="md:text-lg lg:hover:text-[#146B46]">
+      <Link to="report-item" className="md:text-lg lg:hover:text-[#146B46]">
         Report item
-      </Link>
-      <Link to="/" className="md:text-lg lg:hover:text-[#146B46]">
-        How it works
       </Link>
       <Link to="/about" className="md:text-lg lg:hover:text-[#146B46]">
         About
