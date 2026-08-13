@@ -3,9 +3,7 @@ import { ArrowRight, PackageSearch } from "lucide-react";
 import ItemsDetailsModal from "./ItemsDetailsModal";
 import ItemCard from "../common/itemCard";
 const RecentItems = ({ items }) => {
-  // console.log( items);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [verificationStep, setVerificationStep] = useState(false);
 
   // Demo authentication state
   // Replace this with your actual authentication state later.
@@ -13,30 +11,10 @@ const RecentItems = ({ items }) => {
 
   const openDetails = (item) => {
     setSelectedItem(item);
-    setVerificationStep(false);
   };
 
   const closeModal = () => {
     setSelectedItem(null);
-    setVerificationStep(false);
-  };
-
-  const startVerification = () => {
-    if (!isLoggedIn) {
-      return;
-    }
-
-    setVerificationStep(true);
-  };
-
-  const handleVerificationSubmit = (e) => {
-    e.preventDefault();
-
-    // Later send these values to your backend/API.
-
-    alert(
-      "Your ownership verification request has been submitted successfully.",
-    );
   };
 
   return (
@@ -98,11 +76,7 @@ const RecentItems = ({ items }) => {
 
       {selectedItem && (
         <ItemsDetailsModal
-          setVerificationStep={setVerificationStep}
           isLoggedIn={isLoggedIn}
-          handleVerificationSubmit={handleVerificationSubmit}
-          startVerification={startVerification}
-          verificationStep={verificationStep}
           closeModal={closeModal}
           selectedItem={selectedItem}
         />

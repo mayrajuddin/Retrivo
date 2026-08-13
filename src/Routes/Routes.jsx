@@ -9,6 +9,11 @@ import { itemsLoader } from "./DataLoad/loadData";
 import BrowseItems from "../pages/BrowseItems/BrowseItems";
 import ReportItem from "../pages/ReportItem/ReportItem";
 import ErrorPage from "../pages/ErrorPage";
+import DashboardLayout from "../pages/Dashboard/DashboardLayout";
+import MyReports from "../pages/Dashboard/MyReports";
+import ClaimRequests from "../pages/Dashboard/ClaimRequests";
+import OwnershipVerification from "../pages/Dashboard/OwnershipVerification";
+import Profile from "../pages/Dashboard/Profile";
 
 export const router = createBrowserRouter([
   {
@@ -45,7 +50,31 @@ export const router = createBrowserRouter([
     Component: Register,
   },
   {
+    id: "dash",
     path: "/dashboard",
-    Component: DashboardHome,
+    loader: itemsLoader,
+    Component: DashboardLayout,
+    children:[
+      {
+        index: true,
+        Component: DashboardHome,
+      },
+      {
+        path: "reports",
+        Component: MyReports
+      },
+      {
+        path: "claims",
+        Component: ClaimRequests
+      },
+      {
+        path: "verification",
+        Component: OwnershipVerification
+      },
+      {
+        path: "profile",
+        Component: Profile
+      }
+    ]
   },
 ]);

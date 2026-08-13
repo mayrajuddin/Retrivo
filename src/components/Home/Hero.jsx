@@ -25,10 +25,10 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-wrap gap-4 mt-8">
-              <Link to={'/about'} className="btn bg-[#0f6a43] hover:bg-[#0c5a38] text-white border-none px-7">
+              <Link to={"browse-items"} className="btn bg-[#0f6a43] hover:bg-[#0c5a38] text-white border-none px-7">
                 Browse Items
               </Link>
-              <Link to='/' className="btn bg-white hover:bg-gray-100 text-[#0b2d5b] border border-[#0b2d5b] px-7">
+              <Link to='report-item' className="btn bg-white hover:bg-gray-100 text-[#0b2d5b] border border-[#0b2d5b] px-7">
                 Report an Item
               </Link>
             </div>

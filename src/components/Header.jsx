@@ -15,7 +15,7 @@ const Header = () => {
       <Link to="report-item" className="md:text-lg lg:hover:text-[#146B46]">
         Report item
       </Link>
-      <Link to="/about" className="md:text-lg lg:hover:text-[#146B46]">
+      <Link to="/dashboard" className="md:text-lg lg:hover:text-[#146B46]">
         About
       </Link>
       {/* Retrivo | Home | Browse Items | Report Item | My Reports | My Claims | Profile| show after login */}

@@ -99,7 +99,7 @@ const HowItWorks = () => {
 
         <div className="mt-12 text-center">
           <Link
-            to={"/"}
+            to={"browse-items"}
             className="btn bg-[#0f6a43] hover:bg-[#0c5a38] text-white border-none px-7"
           >
             Get Started
