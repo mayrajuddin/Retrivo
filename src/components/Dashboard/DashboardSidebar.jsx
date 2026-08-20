@@ -18,6 +18,11 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
       end: true,
     },
     {
+      name: "Report item",
+      path: "/dashboard/report-item",
+      icon: FileText,
+    },
+    {
       name: "My Reports",
       path: "/dashboard/reports",
       icon: FileText,

@@ -1,10 +1,9 @@
 import { useState } from "react";
-
 import ReportTypeSelector from "../../components/ReportItem/ReportTypeSelector";
 import ReportForm from "../../components/common/ReportForm";
 
 const ReportItem = () => {
-  const [reportType, setReportType] = useState("Lost");
+    const [reportType, setReportType] = useState("Lost");
 
   const handleSubmit = (data) => {
     console.log("Report submitted:", data);
@@ -13,12 +12,11 @@ const ReportItem = () => {
       `${data.status} item report submitted successfully!`
     );
   };
-
-  return (
-    <main className="min-h-screen bg-slate-50">
+    return (
+        <main className="min-h-screen bg-slate-50">
 
       {/* Header */}
-      <section className="border-b border-slate-200 bg-white">
+      {/* <section className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
 
@@ -37,7 +35,7 @@ const ReportItem = () => {
 
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Form Section */}
       <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
@@ -62,7 +60,7 @@ const ReportItem = () => {
       </section>
 
     </main>
-  );
+    );
 };
 
 export default ReportItem;

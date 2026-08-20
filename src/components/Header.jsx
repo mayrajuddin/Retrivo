@@ -2,8 +2,10 @@
 import { Link } from "react-router";
 import logo from "../assets/retrivo_logo.png";
 import { RiMenu2Fill } from "react-icons/ri";
+import { getCurrentUser } from "../utils/authUser";
 
 const Header = () => {
+const user = getCurrentUser()
   const navLinks = (
     <>
       <Link to="/" className="md:text-lg lg:hover:text-[#146B46]">
@@ -12,9 +14,9 @@ const Header = () => {
       <Link to="/browse-items" className="md:text-lg lg:hover:text-[#146B46]">
         Browse items
       </Link>
-      <Link to="report-item" className="md:text-lg lg:hover:text-[#146B46]">
+      { user && <Link to="/dashboard/report-item" className="md:text-lg lg:hover:text-[#146B46]">
         Report item
-      </Link>
+      </Link>}
       <Link to="/dashboard" className="md:text-lg lg:hover:text-[#146B46]">
         About
       </Link>
