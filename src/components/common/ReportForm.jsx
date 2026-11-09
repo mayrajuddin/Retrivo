@@ -19,6 +19,12 @@ const ReportForm = ({
     image: initialData.image || "",
     status: reportType || initialData.status || "Lost",
   });
+  const [imageFile, setImageFile] = useState(null);
+const [imagePreview, setImagePreview] = useState(
+  initialData.image || ""
+);
+
+
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -29,16 +35,59 @@ const ReportForm = ({
     }));
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+const handleImageChange = (event) => {
+  const file = event.target.files[0];
 
-    const finalData = {
-      ...formData,
-      status: reportType,
-    };
+  if (!file) return;
 
-    onSubmit(finalData);
+  if (!["image/jpeg", "image/png"].includes(file.type)) {
+    alert("Please select a JPG or PNG image.");
+    event.target.value = "";
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    alert("Image size must be less than 5MB.");
+    event.target.value = "";
+    return;
+  }
+
+  setImageFile(file);
+
+  // Generate image preview
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    setImagePreview(reader.result);
   };
+
+  reader.readAsDataURL(file);
+};
+
+  const handleSubmit = async (event) => {
+  event.preventDefault();
+
+  let imageData = initialData.image || "";
+
+  if (imageFile) {
+    imageData = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error);
+
+      reader.readAsDataURL(imageFile);
+    });
+  }
+
+  const finalData = {
+    ...formData,
+    image: imageData,
+    status: reportType,
+  };
+
+  onSubmit(finalData);
+};
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -206,40 +255,48 @@ const ReportForm = ({
       </div>
 
       {/* Image */}
-      <div>
-        <label
-          htmlFor="image"
-          className="mb-2 block text-sm font-medium text-slate-700"
-        >
-          Item Image
-        </label>
+<div>
+  <label
+    htmlFor="image"
+    className="mb-2 block text-sm font-medium text-slate-700"
+  >
+    Item Image
+  </label>
 
-        <label
-          htmlFor="image"
-          className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center transition hover:border-slate-500"
-        >
-          <Upload
-            size={28}
-            className="mb-3 text-slate-500"
-          />
+  <label
+    htmlFor="image"
+    className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center transition hover:border-slate-500"
+  >
+    <Upload size={28} className="mb-3 text-slate-500" />
 
-          <span className="text-sm font-medium text-slate-700">
-            Upload item image
-          </span>
+    <span className="text-sm font-medium text-slate-700">
+      {imageFile ? imageFile.name : "Upload item image"}
+    </span>
 
-          <span className="mt-1 text-xs text-slate-500">
-            JPG, PNG up to 5MB
-          </span>
+    <span className="mt-1 text-xs text-slate-500">
+      JPG, PNG up to 5MB
+    </span>
 
-          <input
-            id="image"
-            name="image"
-            type="file"
-            accept="image/png, image/jpeg"
-            className="hidden"
-          />
-        </label>
-      </div>
+    <input
+      id="image"
+      name="image"
+      type="file"
+      accept="image/png, image/jpeg"
+      onChange={handleImageChange}
+      className="hidden"
+    />
+  </label>
+
+  {imagePreview && (
+    <div className="mt-4">
+      <img
+        src={imagePreview}
+        alt="Selected item"
+        className="h-40 w-40 rounded-xl border border-slate-200 object-cover"
+      />
+    </div>
+  )}
+</div>
 
       {/* Reporter */}
       <div>

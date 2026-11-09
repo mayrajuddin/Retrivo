@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { useRouteLoaderData } from "react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
+import { getStoredReports } from "../../utils/reportStorage";
 import ItemCard from "../common/ItemCard";
 import ItemDetailsModal from "../../components/Home/ItemsDetailsModal";
 import ItemFilter from "./ItemFilter";
 
 const AllItems = () => {
-  const items = useRouteLoaderData("root");
-  const [verificationStep, setVerificationStep] = useState(false);
+  const staticItems = useRouteLoaderData("root") || [];
+
+const [reportedItems] = useState(() => getStoredReports());
+
+const items = [...reportedItems, ...staticItems];
 
   // Demo authentication state
   const [isLoggedIn] = useState(true);
@@ -56,23 +59,8 @@ const AllItems = () => {
   const handleCloseModal = () => {
     setSelectedItem(null);
   };
-const startVerification = () => {
-    if (!isLoggedIn) {
-      return;
-    }
 
-    setVerificationStep(true);
-  };
-
-  const handleVerificationSubmit = (e) => {
-    e.preventDefault();
-
-    // Later send these values to your backend/API.
-
-    alert(
-      "Your ownership verification request has been submitted successfully.",
-    );
-  };
+ 
   // Previous page
   const handlePrevious = () => {
     if (currentPage > 1) {
@@ -183,11 +171,7 @@ const startVerification = () => {
       {/* Details Modal */}
       {selectedItem && (
         <ItemDetailsModal
-          setVerificationStep={setVerificationStep}
           isLoggedIn={isLoggedIn}
-          handleVerificationSubmit={handleVerificationSubmit}
-          startVerification={startVerification}
-          verificationStep={verificationStep}
           closeModal={handleCloseModal}
           selectedItem={selectedItem}
         />

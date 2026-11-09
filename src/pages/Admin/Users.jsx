@@ -141,7 +141,7 @@ const Users = () => {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-600 outline-none focus:border-slate-400"
+              className="rounded-lg border border-slate-200 bg-white pr-7 px-3 py-2.5 text-sm text-slate-600 outline-none focus:border-slate-400"
             >
               <option value="All">All Roles</option>
               <option value="User">User</option>
@@ -152,7 +152,7 @@ const Users = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-600 outline-none focus:border-slate-400"
+              className="rounded-lg border border-slate-200 bg-white pr-4 px-3 py-2.5 text-sm text-slate-600 outline-none focus:border-slate-400"
             >
               <option value="All">All Status</option>
               <option value="Active">Active</option>

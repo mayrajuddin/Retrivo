@@ -44,7 +44,7 @@ const AdminHeader = () => {
 
           {/* Admin Profile */}
           <Link
-            to="/dashboard/profile"
+            to="/dashboard/admin/profile"
             className="flex items-center gap-3 rounded-lg px-2 py-1.5 transition hover:bg-slate-100"
           >
             {/* Avatar */}

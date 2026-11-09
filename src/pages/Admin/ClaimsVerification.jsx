@@ -193,7 +193,7 @@ const ClaimsVerification = () => {
             onChange={(e) =>
               setStatusFilter(e.target.value)
             }
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-600 outline-none focus:border-slate-400"
+            className="rounded-lg border border-slate-200 bg-white pr-6 px-3 py-2.5 text-sm text-slate-600 outline-none focus:border-slate-400"
           >
             <option value="All">All Status</option>
             <option value="Pending">Pending</option>

@@ -9,7 +9,7 @@ const DashboardRedirect = () => {
   }
 
   if (user.role === "admin") {
-    return <Navigate to="/admin" replace />;
+    return <Navigate to="/dashboard/admin" replace />;
   }
 
   return <Navigate to="/dashboard/home" replace />;

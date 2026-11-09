@@ -14,19 +14,19 @@ const AdminHome = () => {
       title: "Reports waiting for review",
       count: 12,
       icon: FileText,
-      path: "/admin/reports",
+      path: "/dashboard/admin/reports",
     },
     {
       title: "Ownership requests pending",
       count: 8,
       icon: ShieldCheck,
-      path: "/admin/claims",
+      path: "/dashboard/admin/claims",
     },
     {
       title: "New registered users",
       count: 5,
       icon: Users,
-      path: "/admin/users",
+      path: "/dashboard/admin/users",
     },
   ];
 
@@ -156,7 +156,7 @@ const AdminHome = () => {
           </div>
 
           <Link
-            to="/admin/reports"
+            to="/dashboard/admin/reports"
             className="flex items-center gap-1 text-sm font-medium text-slate-600 transition hover:text-slate-900"
           >
             View All

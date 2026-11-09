@@ -2,6 +2,7 @@ import { Suspense, useState } from "react";
 import { ArrowRight, PackageSearch } from "lucide-react";
 import ItemsDetailsModal from "./ItemsDetailsModal";
 import ItemCard from "../common/ItemCard";
+import { Link } from "react-router";
 const RecentItems = ({ items }) => {
   const [selectedItem, setSelectedItem] = useState(null);
 
@@ -41,20 +42,21 @@ const RecentItems = ({ items }) => {
             </p>
           </div>
 
-          <button
-            className="
-              btn
-              btn-outline
-              border-[#0b2d5b]
-              text-[#0b2d5b]
-              hover:bg-[#0b2d5b]
-              hover:border-[#0b2d5b]
-              hover:text-white
-            "
-          >
-            View All Items
-            <ArrowRight size={17} />
-          </button>
+          <Link
+  to="/browse-items"
+  className="
+    btn
+    btn-outline
+    border-[#0b2d5b]
+    text-[#0b2d5b]
+    hover:bg-[#0b2d5b]
+    hover:border-[#0b2d5b]
+    hover:text-white
+  "
+>
+  View All Items
+  <ArrowRight size={17} />
+</Link>
         </div>
 
         {/* =====================================================

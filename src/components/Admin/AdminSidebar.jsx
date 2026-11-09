@@ -13,28 +13,28 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
   const menuItems = [
     {
       name: "Overview",
-      path: "/admin",
+      path: "/dashboard/admin",
       icon: LayoutDashboard,
       end: true,
     },
     {
       name: "Reports",
-      path: "/admin/reports",
+      path: "/dashboard/admin/reports",
       icon: FileText,
     },
     {
       name: "Users",
-      path: "/admin/users",
+      path: "/dashboard/admin/users",
       icon: Users,
     },
     {
       name: "Claims & Verification",
-      path: "/admin/claims",
+      path: "/dashboard/admin/claims",
       icon: ShieldCheck,
     },
     {
       name: "Profile",
-      path: "/dashboard/profile",
+      path: "/dashboard/admin/profile",
       icon: User,
     },
   ];

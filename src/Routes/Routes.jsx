@@ -25,6 +25,7 @@ import ClaimsVerification from "../pages/Admin/ClaimsVerification";
 
 import { itemsLoader } from "./DataLoad/loadData";
 import ReportItem from "../pages/Dashboard/ReportItem";
+import AdminProfile from "../components/Admin/AdminProfile";
 
 export  const router = createBrowserRouter([
   // =========================
@@ -123,18 +124,20 @@ export  const router = createBrowserRouter([
       },
     ],
   },
-
+  
   {
-    path: "/dashboard/verification",
-    Component: DashboardLayout,
+  id: "dash",
+  path: "/dashboard/verification",
+  Component: DashboardLayout,
+  loader: itemsLoader,
 
-    children: [
-      {
-        index: true,
-        Component: OwnershipVerification,
-      },
-    ],
-  },
+  children: [
+    {
+      index: true,
+      Component: OwnershipVerification,
+    },
+  ],
+},
 
   {
     path: "/dashboard/profile",
@@ -152,7 +155,7 @@ export  const router = createBrowserRouter([
   // ADMIN DASHBOARD
   // =========================
   {
-    path: "/admin",
+    path: "dashboard/admin",
     Component: AdminLayout,
 
     children: [
@@ -175,6 +178,10 @@ export  const router = createBrowserRouter([
         path: "claims",
         Component: ClaimsVerification,
       },
+      {
+        path: 'profile',
+        Component: AdminProfile
+      }
     ],
   },
 ]);

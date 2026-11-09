@@ -1,56 +1,22 @@
 import { useState } from "react";
+import { getCurrentUser } from "../../utils/authUser";
+import { getStoredReports } from "../../utils/reportStorage";
 import { FileText, Eye, CalendarDays } from "lucide-react";
 import ItemsDetailsModal from "../../components/Home/ItemsDetailsModal";
 const MyReports = () => {
   const [activeFilter, setActiveFilter] = useState("All");
   const [selectedItem, setSelectedItem] = useState(null);
-  
-  // Temporary data
-  // Later this data will come from database/API
-  const myReports = [
-    {
-      id: 1,
-      name: "Black Backpack",
-      category: "Bag",
-      date: "Aug 10, 2026",
-      status: "Found",
-      reportStatus: "Active",
-      image:
-        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 2,
-      name: "Black Wallet",
-      category: "Wallet",
-      date: "Aug 08, 2026",
-      status: "Lost",
-      reportStatus: "Active",
-      image:
-        "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 3,
-      name: "Student ID Card",
-      category: "ID Card",
-      date: "Aug 05, 2026",
-      status: "Found",
-      reportStatus: "Recovered",
-      image:
-        "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 4,
-      name: "Wireless Earbuds",
-      category: "Electronics",
-      date: "Aug 03, 2026",
-      status: "Lost",
-      reportStatus: "Pending",
-      image:
-        "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?auto=format&fit=crop&w=800&q=80",
-    },
-  ];
+  const currentUser = getCurrentUser();
+  const [myReports] = useState(() => {
+    const allReports = getStoredReports();
 
-  const filters = ["All", "Lost", "Found", "Recovered"];
+    return allReports.filter(
+      (report) =>
+        report.reporterEmail === currentUser?.email
+    );
+  });
+
+   const filters = ["All", "Lost", "Found", "Recovered"];
 
   const filteredReports = myReports.filter((item) => {
     if (activeFilter === "All") {
@@ -301,6 +267,7 @@ const MyReports = () => {
         <ItemsDetailsModal
           selectedItem={selectedItem}
           closeModal={() => setSelectedItem(null)}
+          isLoggedIn={true}
         />
       )}
     </div>

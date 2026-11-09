@@ -194,13 +194,13 @@ const Reports = () => {
             <div className="flex items-center gap-2">
               <SlidersHorizontal
                 size={17}
-                className="text-slate-400"
+                className="text-slate-400 "
               />
 
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="pr-2 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-600 outline-none focus:border-slate-400"
+                className="pr-7 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-600 outline-none focus:border-slate-400"
               >
                 <option value="All" className="">All Types</option>
                 <option value="Lost">Lost</option>
@@ -212,7 +212,7 @@ const Reports = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-600 outline-none focus:border-slate-400"
+              className="rounded-lg border border-slate-200 bg-white pr-6 px-3 py-2.5 text-sm text-slate-600 outline-none focus:border-slate-400"
             >
               <option value="All">All Status</option>
               <option value="Pending">Pending</option>
