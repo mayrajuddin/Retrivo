@@ -1,83 +1,157 @@
+
 import { useState } from "react";
+import { getCurrentUser } from "../../utils/authUser";
+import {
+  getStoredClaims,
+  saveStoredClaims,
+} from "../../utils/claimStorage";
 import {
   ClipboardCheck,
   Eye,
   CalendarDays,
+  Pencil,
+  Trash2,
+  X,
 } from "lucide-react";
 
 const ClaimRequests = () => {
   const [activeFilter, setActiveFilter] = useState("All");
+  const [selectedClaim, setSelectedClaim] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Temporary data
-  // Later this data will come from database
-  const claimRequests = [
-    {
-      id: 1,
-      itemName: "Black Backpack",
-      category: "Bag",
-      reporter: "Rahim Ahmed",
-      date: "Aug 11, 2026",
-      status: "Pending",
-      image:
-        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
-    },
+  const currentUser = getCurrentUser();
 
-    {
-      id: 2,
-      itemName: "Student ID Card",
-      category: "ID Card",
-      reporter: "Nusrat Jahan",
-      date: "Aug 09, 2026",
-      status: "Approved",
-      image:
-        "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80",
-    },
+  const [claimRequests, setClaimRequests] = useState(() => {
+    const allClaims = getStoredClaims();
 
-    {
-      id: 3,
-      itemName: "Silver Key",
-      category: "Keys",
-      reporter: "Tanvir Rahman",
-      date: "Aug 08, 2026",
-      status: "Rejected",
-      image:
-        "https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=800&q=80",
-    },
+    return allClaims.filter(
+      (claim) => claim.claimantEmail === currentUser?.email,
+    );
+  });
 
-    {
-      id: 4,
-      itemName: "Blue Water Bottle",
-      category: "Personal Item",
-      reporter: "Mahin Chowdhury",
-      date: "Aug 06, 2026",
-      status: "Pending",
-      image:
-        "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=800&q=80",
-    },
-  ];
+  const [editForm, setEditForm] = useState({
+    lostLocation: "",
+    lostDate: "",
+    lostTime: "",
+    identifyingDetails: "",
+    contactNumber: "",
+    additionalInfo: "",
+  });
 
-  const filters = [
-    "All",
-    "Pending",
-    "Approved",
-    "Rejected",
-  ];
+  const filters = ["All", "Pending", "Approved", "Rejected"];
 
   const filteredRequests = claimRequests.filter((request) => {
-    if (activeFilter === "All") {
-      return true;
-    }
-
+    if (activeFilter === "All") return true;
     return request.status === activeFilter;
   });
 
+  // Open claim details
+  const handleView = (request) => {
+    setSelectedClaim(request);
+    setIsEditing(false);
+  };
+
+  // Start editing
+  const handleEdit = () => {
+    setEditForm({
+      lostLocation: selectedClaim.lostLocation || "",
+      lostDate: selectedClaim.lostDate || "",
+      lostTime: selectedClaim.lostTime || "",
+      identifyingDetails: selectedClaim.identifyingDetails || "",
+      contactNumber: selectedClaim.contactNumber || "",
+      additionalInfo: selectedClaim.additionalInfo || "",
+    });
+
+    setIsEditing(true);
+  };
+
+  // Handle edit form changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    setEditForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Save edited claim
+  const handleSave = (e) => {
+    e.preventDefault();
+
+    const updatedClaims = claimRequests.map((claim) =>
+      String(claim.id) === String(selectedClaim.id)
+        ? { ...claim, ...editForm }
+        : claim,
+    );
+
+    const allStoredClaims = getStoredClaims();
+
+    const updatedAllClaims = allStoredClaims.map((claim) =>
+      String(claim.id) === String(selectedClaim.id)
+        ? { ...claim, ...editForm }
+        : claim,
+    );
+
+    saveStoredClaims(updatedAllClaims);
+    setClaimRequests(updatedClaims);
+
+    const updatedSelectedClaim = updatedClaims.find(
+      (claim) => String(claim.id) === String(selectedClaim.id),
+    );
+
+    setSelectedClaim(updatedSelectedClaim);
+    setIsEditing(false);
+
+    alert("Claim updated successfully!");
+  };
+
+  // Delete claim
+  const handleDelete = (claimId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this claim request?",
+    );
+
+    if (!confirmed) return;
+
+    const updatedClaims = claimRequests.filter(
+      (claim) => String(claim.id) !== String(claimId),
+    );
+
+    const allStoredClaims = getStoredClaims();
+
+    const updatedAllClaims = allStoredClaims.filter(
+      (claim) => String(claim.id) !== String(claimId),
+    );
+
+    saveStoredClaims(updatedAllClaims);
+    setClaimRequests(updatedClaims);
+
+    if (
+      selectedClaim &&
+      String(selectedClaim.id) === String(claimId)
+    ) {
+      setSelectedClaim(null);
+    }
+
+    alert("Claim deleted successfully!");
+  };
+
+  const inputClass =
+    "w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-slate-400";
+
+  const statusClass = (status) =>
+    status === "Approved"
+      ? "bg-slate-800 text-white"
+      : status === "Rejected"
+        ? "bg-slate-100 text-slate-500"
+        : "bg-slate-50 text-slate-600";
+
   return (
     <div className="mx-auto max-w-7xl">
-
       {/* Page Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3">
-
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
             <ClipboardCheck size={20} />
           </div>
@@ -91,7 +165,6 @@ const ClaimRequests = () => {
               Track the ownership claims you have submitted.
             </p>
           </div>
-
         </div>
       </div>
 
@@ -120,28 +193,22 @@ const ClaimRequests = () => {
           <span className="font-semibold text-slate-700">
             {filteredRequests.length}
           </span>{" "}
-          {filteredRequests.length === 1
-            ? "request"
-            : "requests"}
+          {filteredRequests.length === 1 ? "request" : "requests"}
         </p>
       </div>
 
       {/* Desktop Table */}
       <div className="hidden overflow-hidden rounded-xl border border-slate-200 bg-white md:block">
-
         <div className="overflow-x-auto">
           <table className="w-full min-w-200">
-
-            {/* Header */}
             <thead className="border-b border-slate-200 bg-slate-50">
               <tr>
-
                 <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   Item
                 </th>
 
                 <th className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Reporter
+                  Claimant
                 </th>
 
                 <th className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -155,23 +222,14 @@ const ClaimRequests = () => {
                 <th className="px-4 py-4 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
                   Action
                 </th>
-
               </tr>
             </thead>
 
-            {/* Body */}
             <tbody className="divide-y divide-slate-100">
-
               {filteredRequests.map((request) => (
-                <tr
-                  key={request.id}
-                  className="transition hover:bg-slate-50"
-                >
-
-                  {/* Item */}
+                <tr key={request.id} className="transition hover:bg-slate-50">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-
                       <img
                         src={request.image}
                         alt={request.itemName}
@@ -187,71 +245,71 @@ const ClaimRequests = () => {
                           {request.category}
                         </p>
                       </div>
-
                     </div>
                   </td>
 
-                  {/* Reporter */}
                   <td className="px-4 py-4">
                     <p className="text-sm text-slate-600">
-                      {request.reporter}
+                      {request.claimantName}
                     </p>
                   </td>
 
-                  {/* Date */}
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-2 text-sm text-slate-500">
                       <CalendarDays size={15} />
-                      {request.date}
+                      {request.submittedAt
+                        ? new Date(request.submittedAt).toLocaleDateString()
+                        : "N/A"}
                     </div>
                   </td>
 
-                  {/* Status */}
                   <td className="px-4 py-4">
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-medium ${
-                        request.status === "Approved"
-                          ? "bg-slate-800 text-white"
-                          : request.status === "Rejected"
-                          ? "bg-slate-100 text-slate-500"
-                          : "bg-slate-50 text-slate-600"
-                      }`}
+                      className={`rounded-full px-3 py-1 text-xs font-medium ${statusClass(request.status)}`}
                     >
                       {request.status}
                     </span>
                   </td>
 
                   {/* Action */}
-                  <td className="px-4 py-4 text-right">
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
-                    >
-                      <Eye size={15} />
-                      View
-                    </button>
-                  </td>
+                  <td className="px-4 py-4">
+                    <div className="flex justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleView(request)}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-100"
+                      >
+                        <Eye size={14} />
+                        View
+                      </button>
 
+                      {request.status === "Pending" && (
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(request.id)}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 px-3 py-2 text-xs font-medium text-red-600 transition hover:bg-red-50"
+                        >
+                          <Trash2 size={14} />
+                          Delete
+                        </button>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               ))}
-
             </tbody>
-
           </table>
         </div>
       </div>
 
       {/* Mobile List */}
       <div className="space-y-3 md:hidden">
-
         {filteredRequests.map((request) => (
           <div
             key={request.id}
             className="rounded-xl border border-slate-200 bg-white p-4"
           >
-
             <div className="flex gap-3">
-
               <img
                 src={request.image}
                 alt={request.itemName}
@@ -259,65 +317,59 @@ const ClaimRequests = () => {
               />
 
               <div className="min-w-0 flex-1">
+                <h3 className="truncate text-sm font-semibold text-slate-700">
+                  {request.itemName}
+                </h3>
 
-                <div className="flex items-start justify-between gap-2">
-
-                  <div>
-                    <h3 className="truncate text-sm font-semibold text-slate-700">
-                      {request.itemName}
-                    </h3>
-
-                    <p className="mt-0.5 text-xs text-slate-400">
-                      {request.category}
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="rounded-lg p-2 text-slate-500 hover:bg-slate-100"
-                  >
-                    <Eye size={17} />
-                  </button>
-
-                </div>
+                <p className="mt-0.5 text-xs text-slate-400">
+                  {request.category}
+                </p>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-
                   <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                      request.status === "Approved"
-                        ? "bg-slate-800 text-white"
-                        : request.status === "Rejected"
-                        ? "bg-slate-100 text-slate-500"
-                        : "bg-slate-50 text-slate-600"
-                    }`}
+                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusClass(request.status)}`}
                   >
                     {request.status}
                   </span>
 
                   <span className="text-xs text-slate-400">
-                    {request.date}
+                    {request.submittedAt
+                      ? new Date(request.submittedAt).toLocaleDateString()
+                      : "N/A"}
                   </span>
-
                 </div>
-
               </div>
-
             </div>
 
+            <div className="mt-4 flex gap-2 border-t border-slate-100 pt-3">
+              <button
+                type="button"
+                onClick={() => handleView(request)}
+                className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100"
+              >
+                <Eye size={14} />
+                View
+              </button>
+
+              {request.status === "Pending" && (
+                <button
+                  type="button"
+                  onClick={() => handleDelete(request.id)}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50"
+                >
+                  <Trash2 size={14} />
+                  Delete
+                </button>
+              )}
+            </div>
           </div>
         ))}
-
       </div>
 
       {/* Empty State */}
       {filteredRequests.length === 0 && (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
-
-          <ClipboardCheck
-            size={36}
-            className="mx-auto text-slate-300"
-          />
+          <ClipboardCheck size={36} className="mx-auto text-slate-300" />
 
           <h3 className="mt-4 font-semibold text-slate-700">
             No claim requests found
@@ -326,10 +378,258 @@ const ClaimRequests = () => {
           <p className="mt-1 text-sm text-slate-500">
             You don't have any {activeFilter.toLowerCase()} claim requests.
           </p>
-
         </div>
       )}
 
+      {/* Claim Details Modal */}
+      {selectedClaim && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-xl">
+            {/* Modal Header */}
+            <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
+              <div>
+                <h2 className="text-lg font-bold text-slate-800">
+                  {isEditing ? "Edit Claim Request" : "Claim Details"}
+                </h2>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  {selectedClaim.itemName}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedClaim(null);
+                  setIsEditing(false);
+                }}
+                className="rounded-lg p-2 text-slate-500 hover:bg-slate-100"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5">
+              {selectedClaim.image && (
+                <img
+                  src={selectedClaim.image}
+                  alt={selectedClaim.itemName}
+                  className="mb-5 h-48 w-full rounded-xl object-cover"
+                />
+              )}
+
+              {!isEditing ? (
+                <div className="space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <p className="text-xs text-slate-400">Item Name</p>
+                      <p className="mt-1 text-sm font-semibold text-slate-700">
+                        {selectedClaim.itemName}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-slate-400">Category</p>
+                      <p className="mt-1 text-sm font-semibold text-slate-700">
+                        {selectedClaim.category}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-slate-400">Claimant</p>
+                      <p className="mt-1 text-sm text-slate-700">
+                        {selectedClaim.claimantName || "N/A"}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-slate-400">Contact Number</p>
+                      <p className="mt-1 text-sm text-slate-700">
+                        {selectedClaim.contactNumber || "N/A"}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-slate-400">Lost Location</p>
+                      <p className="mt-1 text-sm text-slate-700">
+                        {selectedClaim.lostLocation || "N/A"}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-slate-400">Lost Date</p>
+                      <p className="mt-1 text-sm text-slate-700">
+                        {selectedClaim.lostDate || "N/A"}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-slate-400">Lost Time</p>
+                      <p className="mt-1 text-sm text-slate-700">
+                        {selectedClaim.lostTime || "N/A"}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-slate-400">Submitted At</p>
+                      <p className="mt-1 text-sm text-slate-700">
+                        {selectedClaim.submittedAt
+                          ? new Date(selectedClaim.submittedAt).toLocaleString()
+                          : "N/A"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-400">
+                      Identifying Details
+                    </p>
+                    <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">
+                      {selectedClaim.identifyingDetails || "N/A"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-400">
+                      Additional Information
+                    </p>
+                    <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">
+                      {selectedClaim.additionalInfo || "N/A"}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleSave} className="space-y-4">
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-slate-600">
+                      Lost Location
+                    </label>
+                    <input
+                      type="text"
+                      name="lostLocation"
+                      value={editForm.lostLocation}
+                      onChange={handleInputChange}
+                      className={inputClass}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-slate-600">
+                        Lost Date
+                      </label>
+                      <input
+                        type="date"
+                        name="lostDate"
+                        value={editForm.lostDate}
+                        onChange={handleInputChange}
+                        className={inputClass}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-slate-600">
+                        Lost Time
+                      </label>
+                      <input
+                        type="time"
+                        name="lostTime"
+                        value={editForm.lostTime}
+                        onChange={handleInputChange}
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-slate-600">
+                      Identifying Details
+                    </label>
+                    <textarea
+                      name="identifyingDetails"
+                      value={editForm.identifyingDetails}
+                      onChange={handleInputChange}
+                      rows={3}
+                      className={inputClass}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-slate-600">
+                      Contact Number
+                    </label>
+                    <input
+                      type="tel"
+                      name="contactNumber"
+                      value={editForm.contactNumber}
+                      onChange={handleInputChange}
+                      className={inputClass}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-slate-600">
+                      Additional Information
+                    </label>
+                    <textarea
+                      name="additionalInfo"
+                      value={editForm.additionalInfo}
+                      onChange={handleInputChange}
+                      rows={3}
+                      className={inputClass}
+                    />
+                  </div>
+
+                  <div className="flex flex-wrap justify-end gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditing(false)}
+                      className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      type="submit"
+                      className="rounded-lg bg-slate-800 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* Modal Actions */}
+              {!isEditing && selectedClaim.status === "Pending" && (
+                <div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleEdit}
+                    className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100"
+                  >
+                    <Pencil size={15} />
+                    Edit Claim
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(selectedClaim.id)}
+                    className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700"
+                  >
+                    <Trash2 size={15} />
+                    Delete Claim
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

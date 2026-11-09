@@ -1,3 +1,8 @@
+import { getCurrentUser } from "../../utils/authUser";
+import {
+  getStoredClaims,
+  saveStoredClaims,
+} from "../../utils/claimStorage";
 import { useState } from "react";
 import {
   useNavigate,
@@ -29,8 +34,8 @@ const OwnershipVerification = () => {
 
   // Find selected item
   const selectedItem = items?.find(
-    (item) => item.id === Number(itemId)
-  );
+  (item) => String(item.id) === String(itemId)
+);
 
   const [formData, setFormData] = useState({
     lostLocation: "",
@@ -54,22 +59,116 @@ const OwnershipVerification = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (event) => {
-    event.preventDefault();
 
-    // const verificationData = {
-    //   itemId: selectedItem.id,
-    //   itemName: selectedItem.name,
-    //   category: selectedItem.category,
-    //   ...formData,
-    // };
+const handleSubmit = (event) => {
+  event.preventDefault();
 
-    // Temporary
-    // Later this data will be sent to database
-    // console.log("Ownership Verification:", verificationData);
+  if (!selectedItem) {
+    alert("No item selected.");
+    return;
+  }
+
+  if (selectedItem.status !== "Found") {
+    alert("You can only claim a found item.");
+    return;
+  }
+
+  const currentUser = getCurrentUser();
+
+  if (!currentUser?.email) {
+    alert("Please log in before submitting a claim.");
+    return;
+  }
+
+  // Validate required text fields
+  if (
+    !formData.lostLocation.trim() ||
+    !formData.identifyingDetails.trim() ||
+    !formData.contactNumber.trim()
+  ) {
+    alert("Please fill in all required fields.");
+    return;
+  }
+
+  // Validate Bangladesh mobile number
+  const phoneNumber = formData.contactNumber.replace(/[\s-]/g, "");
+  const phoneRegex = /^(?:\+?8801|01)[3-9]\d{8}$/;
+
+  if (!phoneRegex.test(phoneNumber)) {
+    alert("Please enter a valid Bangladesh mobile number.");
+    return;
+  }
+
+  // Prevent future lost date
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const selectedDate = new Date(`${formData.lostDate}T00:00:00`);
+
+  if (!formData.lostDate || selectedDate > today) {
+    alert("Please select a valid date. Future dates are not allowed.");
+    return;
+  }
+
+  try {
+    const existingClaims = getStoredClaims();
+
+    // Check for an existing pending claim
+    const duplicateClaim = existingClaims.find(
+      (claim) =>
+        String(claim.itemId) === String(selectedItem.id) &&
+        claim.claimantEmail === currentUser.email &&
+        String(claim.status).toLowerCase() === "pending",
+    );
+
+    if (duplicateClaim) {
+      alert(
+        "You have already submitted a pending claim for this item. Please wait for the admin to review it.",
+      );
+      return;
+    }
+
+    // Create new claim request
+    const newClaim = {
+      id: Date.now(),
+
+      itemId: selectedItem.id,
+      itemName: selectedItem.name,
+      category: selectedItem.category,
+      image: selectedItem.image,
+
+      claimantName: currentUser.name || "",
+      claimantEmail: currentUser.email,
+
+      lostLocation: formData.lostLocation.trim(),
+      lostDate: formData.lostDate,
+      lostTime: formData.lostTime,
+      identifyingDetails: formData.identifyingDetails.trim(),
+      contactNumber: formData.contactNumber.trim(),
+      additionalInfo: formData.additionalInfo.trim(),
+
+      status: "Pending",
+      submittedAt: new Date().toISOString(),
+    };
+
+    // Save claim request
+    const updatedClaims = [newClaim, ...existingClaims];
+
+    saveStoredClaims(updatedClaims);
 
     setSubmitted(true);
-  };
+
+    console.log("Claim submitted:", newClaim);
+  } catch (error) {
+    console.error("Claim submission failed:", error);
+
+    alert(
+      "Unable to submit your verification request. Please try again.",
+    );
+  }
+};
+
+
 
   // -----------------------------------------
   // No item selected
@@ -266,7 +365,7 @@ const OwnershipVerification = () => {
           VERIFICATION FORM
       ========================================== */}
 
-      <form
+      {!submitted && (<form
         onSubmit={handleSubmit}
         className="rounded-xl border border-slate-200 bg-white"
       >
@@ -343,6 +442,7 @@ const OwnershipVerification = () => {
                 id="lostDate"
                 name="lostDate"
                 type="date"
+                max={new Date().toISOString().split("T")[0]}
                 value={formData.lostDate}
                 onChange={handleChange}
                 required
@@ -494,7 +594,7 @@ const OwnershipVerification = () => {
 
         </div>
 
-      </form>
+      </form>)}
 
     </div>
   );
