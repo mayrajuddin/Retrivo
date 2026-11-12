@@ -1,4 +1,3 @@
-
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
@@ -22,7 +21,7 @@ export const authenticateUser = async (req, res, next) => {
 
     // Check user in database
     const user = await User.findById(decoded.id).select(
-      "_id name email role status"
+      "_id name email phone photoURL role status authProvider"
     );
 
     if (!user || user.status !== "active") {

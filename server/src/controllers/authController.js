@@ -319,3 +319,112 @@ export const googleLogin = async (req, res) => {
     });
   }
 };
+
+// Update logged-in user's profile
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, phone, photoURL } = req.body;
+
+    const updates = {};
+
+    // Validate and update name
+    if (name !== undefined) {
+      if (typeof name !== "string" || name.trim().length < 2) {
+        return res.status(400).json({
+          success: false,
+          message: "Name must contain at least 2 characters",
+        });
+      }
+
+      if (name.trim().length > 50) {
+        return res.status(400).json({
+          success: false,
+          message: "Name cannot exceed 50 characters",
+        });
+      }
+
+      updates.name = name.trim();
+    }
+
+    // Validate and update phone
+    if (phone !== undefined) {
+      if (typeof phone !== "string" || phone.length > 20) {
+        return res.status(400).json({
+          success: false,
+          message: "Please provide a valid phone number",
+        });
+      }
+
+      updates.phone = phone.trim();
+    }
+
+    // Validate and update profile photo URL
+    if (photoURL !== undefined) {
+      if (typeof photoURL !== "string" || photoURL.length > 500) {
+        return res.status(400).json({
+          success: false,
+          message: "Please provide a valid profile photo URL",
+        });
+      }
+
+      const trimmedPhotoURL = photoURL.trim();
+
+      if (
+        trimmedPhotoURL &&
+        !/^https?:\/\/.+/i.test(trimmedPhotoURL)
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Profile photo must be a valid HTTP or HTTPS URL",
+        });
+      }
+
+      updates.photoURL = trimmedPhotoURL;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No profile information provided",
+      });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: updates },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).select("_id name email phone photoURL role status authProvider");
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: {
+        id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        photoURL: updatedUser.photoURL,
+        role: updatedUser.role,
+        status: updatedUser.status,
+        authProvider: updatedUser.authProvider,
+      },
+    });
+  } catch (error) {
+    console.error("Profile update error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};

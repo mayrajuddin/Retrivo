@@ -1,13 +1,11 @@
-import { Bell, User } from "lucide-react";
+import { Bell, } from "lucide-react";
 import { Link } from "react-router";
+import { useAuth } from "../../contexts/AuthContext";
 
 const AdminHeader = () => {
-  // Temporary admin information
-  // পরে authentication/database থেকে আসবে
-  const admin = {
-    name: "Admin",
-    role: "Administrator",
-  };
+  const { user } = useAuth();
+  console.log(user.email);
+  
 
   return (
     <header className="hidden border-b border-slate-200 bg-white lg:block">
@@ -49,17 +47,13 @@ const AdminHeader = () => {
           >
             {/* Avatar */}
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 text-white">
-              <User size={18} strokeWidth={1.8} />
+              <img src={user.photoURL} alt={user.name} className="h-full w-full object-cover"/>
             </div>
 
             {/* Admin Info */}
             <div className="text-left">
               <p className="text-sm font-semibold text-slate-700">
-                {admin.name}
-              </p>
-
-              <p className="text-xs text-slate-400">
-                {admin.role}
+                {user.name}
               </p>
             </div>
           </Link>

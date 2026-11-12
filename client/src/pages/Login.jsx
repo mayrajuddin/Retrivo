@@ -3,8 +3,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { GoogleLogin } from "@react-oauth/google";
 import BGImg from "../assets/logBG.jpg";
-
+import { useAuth } from "../contexts/AuthContext";
 const Login = () => {
+  const { refreshUser } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -46,7 +47,8 @@ const Login = () => {
         throw new Error(data.message || "Login failed!");
       }
 
-      navigate("/dashboard");
+      await refreshUser();
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       setError(err.message || "Something went wrong!");
     } finally {
@@ -77,7 +79,8 @@ const Login = () => {
         throw new Error(data.message || "Google login failed!");
       }
 
-      navigate("/dashboard");
+      await refreshUser();
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       setError(err.message || "Something went wrong!");
     } finally {

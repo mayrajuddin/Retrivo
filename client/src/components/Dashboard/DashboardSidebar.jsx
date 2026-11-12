@@ -1,3 +1,4 @@
+
 import {
   LayoutDashboard,
   FileText,
@@ -7,9 +8,25 @@ import {
   LogOut,
   X,
 } from "lucide-react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
+import { useAuth } from "../../contexts/AuthContext";
 
 const DashboardSidebar = ({ isOpen, setIsOpen }) => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+
+      setIsOpen(false);
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Logout failed:", error);
+      alert("Unable to logout. Please try again.");
+    }
+  };
+
   const menuItems = [
     {
       name: "Overview",
@@ -118,6 +135,7 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
         <div className="border-t border-slate-200 p-4">
           <button
             type="button"
+            onClick={handleLogout}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
           >
             <LogOut size={19} strokeWidth={1.8} />

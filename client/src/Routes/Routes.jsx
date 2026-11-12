@@ -1,3 +1,4 @@
+
 import { createBrowserRouter } from "react-router";
 
 import Root from "../pages/Root/Root";
@@ -22,12 +23,15 @@ import AdminHome from "../pages/Admin/AdminHome";
 import Reports from "../pages/Admin/Reports";
 import Users from "../pages/Admin/Users";
 import ClaimsVerification from "../pages/Admin/ClaimsVerification";
+import AdminProfile from "../components/Admin/AdminProfile";
+import ReportItem from "../pages/Dashboard/ReportItem";
 
 import { itemsLoader } from "./DataLoad/loadData";
-import ReportItem from "../pages/Dashboard/ReportItem";
-import AdminProfile from "../components/Admin/AdminProfile";
 
-export  const router = createBrowserRouter([
+import ProtectedRoute from "../routes/ProtectedRoute";
+import AdminRoute from "../routes/AdminRoute";
+
+export const router = createBrowserRouter([
   // =========================
   // MAIN WEBSITE
   // =========================
@@ -43,12 +47,10 @@ export  const router = createBrowserRouter([
         index: true,
         Component: Home,
       },
-
       {
         path: "browse-items",
         Component: BrowseItems,
       },
-
       {
         path: "about",
         Component: About,
@@ -63,125 +65,133 @@ export  const router = createBrowserRouter([
     path: "/login",
     Component: Login,
   },
-
   {
     path: "/register",
     Component: Register,
   },
 
   // =========================
-  // DASHBOARD ENTRY
+  // PROTECTED DASHBOARD
   // =========================
   {
     path: "/dashboard",
-    Component: DashboardRedirect,
-  },
-
-  // =========================
-  // USER DASHBOARD
-  // =========================
-  {
-    path: "/dashboard/home",
-    Component: DashboardLayout,
+    Component: ProtectedRoute,
 
     children: [
       {
         index: true,
-        Component: DashboardHome,
+        Component: DashboardRedirect,
       },
-    ],
-  },
-  {
-    path: "/dashboard/report-item",
-    Component: DashboardLayout,
-    children:[
+
+      // USER DASHBOARD HOME
       {
-        index : true,
-        Component: ReportItem,
+        path: "home",
+        Component: DashboardLayout,
+        children: [
+          {
+            index: true,
+            Component: DashboardHome,
+          },
+        ],
       },
-    ]
-  },
-  {
-    path: "/dashboard/reports",
-    Component: DashboardLayout,
 
-    children: [
+      // REPORT ITEM
       {
-        index: true,
-        Component: MyReports,
-      },
-    ],
-  },
-
-  {
-    path: "/dashboard/claims",
-    Component: DashboardLayout,
-
-    children: [
-      {
-        index: true,
-        Component: ClaimRequests,
-      },
-    ],
-  },
-  
-  {
-  id: "dash",
-  path: "/dashboard/verification",
-  Component: DashboardLayout,
-  loader: itemsLoader,
-
-  children: [
-    {
-      index: true,
-      Component: OwnershipVerification,
-    },
-  ],
-},
-
-  {
-    path: "/dashboard/profile",
-    Component: DashboardLayout,
-
-    children: [
-      {
-        index: true,
-        Component: Profile,
-      },
-    ],
-  },
-
-  // =========================
-  // ADMIN DASHBOARD
-  // =========================
-  {
-    path: "dashboard/admin",
-    Component: AdminLayout,
-
-    children: [
-      {
-        index: true,
-        Component: AdminHome,
+        path: "report-item",
+        Component: DashboardLayout,
+        children: [
+          {
+            index: true,
+            Component: ReportItem ,
+          },
+        ],
       },
 
+      // MY REPORTS
       {
         path: "reports",
-        Component: Reports,
+        Component: DashboardLayout,
+        children: [
+          {
+            index: true,
+            Component: MyReports,
+          },
+        ],
       },
 
-      {
-        path: "users",
-        Component: Users,
-      },
-
+      // CLAIM REQUESTS
       {
         path: "claims",
-        Component: ClaimsVerification,
+        Component: DashboardLayout,
+        children: [
+          {
+            index: true,
+            Component: ClaimRequests,
+          },
+        ],
       },
+
+      // OWNERSHIP VERIFICATION
       {
-        path: 'profile',
-        Component: AdminProfile
-      }
+        path: "verification",
+        Component: DashboardLayout,
+        loader: itemsLoader,
+        children: [
+          {
+            index: true,
+            Component: OwnershipVerification,
+          },
+        ],
+      },
+
+      // USER PROFILE
+      {
+        path: "profile",
+        Component: DashboardLayout,
+        children: [
+          {
+            index: true,
+            Component: Profile,
+          },
+        ],
+      },
+
+      // =========================
+      // ADMIN ROUTE PROTECTION
+      // =========================
+      {
+        path: "admin",
+        Component: AdminRoute,
+
+        children: [
+          {
+            Component: AdminLayout,
+
+            children: [
+              {
+                index: true,
+                Component: AdminHome,
+              },
+              {
+                path: "reports",
+                Component: Reports,
+              },
+              {
+                path: "users",
+                Component: Users,
+              },
+              {
+                path: "claims",
+                Component: ClaimsVerification,
+              },
+              {
+                path: "profile",
+                Component: AdminProfile,
+              },
+            ],
+          },
+        ],
+      },
     ],
   },
 ]);

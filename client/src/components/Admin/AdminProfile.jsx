@@ -3,8 +3,6 @@ import {
   User,
   Mail,
   Phone,
-  Building2,
-  IdCard,
   ShieldCheck,
   Pencil,
   LockKeyhole,
@@ -12,18 +10,19 @@ import {
   X,
   BadgeCheck,
 } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
 
 const AdminProfile = () => {
-  // Temporary admin data
-  // Later this data will come from authentication/database
-  const [admin, setAdmin] = useState({
-    name: "Admin User",
-    email: "admin@retrivo.com",
-    phone: "01712345678",
-    department: "Student Affairs",
-    adminId: "ADM-001",
-    role: "Administrator",
-  });
+  const { user } = useAuth();
+  const [admin, setAdmin] = useState(() => ({
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "Not provided",
+    photoURL: user?.photoURL || "",
+    role: user?.role === "admin" ? "Administrator" : user?.role,
+    status: user?.status || "active",
+    authProvider: user?.authProvider || "email",
+  }));
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -74,31 +73,24 @@ const AdminProfile = () => {
 
   return (
     <div className="mx-auto max-w-5xl">
-
       {/* =========================================
           PAGE HEADER
       ========================================== */}
 
       <div className="mb-6">
-
         <div className="flex items-center gap-3">
-
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
             <ShieldCheck size={20} />
           </div>
 
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">
-              Admin Profile
-            </h1>
+            <h1 className="text-2xl font-bold text-slate-800">Admin Profile</h1>
 
             <p className="mt-1 text-sm text-slate-500">
               Manage your administrator account information.
             </p>
           </div>
-
         </div>
-
       </div>
 
       {/* =========================================
@@ -106,7 +98,6 @@ const AdminProfile = () => {
       ========================================== */}
 
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-
         {/* Cover */}
 
         <div className="h-28 bg-slate-100" />
@@ -114,13 +105,10 @@ const AdminProfile = () => {
         {/* Profile */}
 
         <div className="px-5 pb-6 sm:px-6">
-
           <div className="-mt-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-
             {/* Avatar + Name */}
 
             <div className="flex items-end gap-4">
-
               <div
                 className="
                   flex
@@ -139,30 +127,28 @@ const AdminProfile = () => {
                   shadow-sm
                 "
               >
-                {initials}
+                {admin.photoURL ? (
+                  <img
+                    src={admin.photoURL}
+                    alt={admin.name}
+                    className="h-full w-full rounded-full object-cover"
+                  />
+                ) : (
+                  initials
+                )}
               </div>
 
               <div className="pb-1">
-
                 <div className="flex items-center gap-2">
-
                   <h2 className="text-xl font-bold text-slate-800">
                     {admin.name}
                   </h2>
 
-                  <BadgeCheck
-                    size={18}
-                    className="text-slate-500"
-                  />
-
+                  <BadgeCheck size={18} className="text-slate-500" />
                 </div>
 
-                <p className="mt-1 text-sm text-slate-500">
-                  {admin.role}
-                </p>
-
+                <p className="mt-1 text-sm text-slate-500">{admin.role}</p>
               </div>
-
             </div>
 
             {/* Edit Button */}
@@ -190,11 +176,8 @@ const AdminProfile = () => {
               <Pencil size={16} />
               Edit Profile
             </button>
-
           </div>
-
         </div>
-
       </div>
 
       {/* =========================================
@@ -202,13 +185,10 @@ const AdminProfile = () => {
       ========================================== */}
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-
         {/* Personal Information */}
 
         <div className="rounded-xl border border-slate-200 bg-white lg:col-span-2">
-
           <div className="border-b border-slate-200 px-5 py-5 sm:px-6">
-
             <h2 className="font-semibold text-slate-800">
               Administrator Information
             </h2>
@@ -216,11 +196,9 @@ const AdminProfile = () => {
             <p className="mt-1 text-xs text-slate-500">
               Basic information about the administrator account.
             </p>
-
           </div>
 
           <div className="grid grid-cols-1 gap-5 p-5 sm:grid-cols-2 sm:p-6">
-
             <ProfileInfo
               icon={<User size={17} />}
               label="Full Name"
@@ -240,79 +218,65 @@ const AdminProfile = () => {
             />
 
             <ProfileInfo
-              icon={<Building2 size={17} />}
-              label="Department"
-              value={admin.department}
-            />
-
-            <ProfileInfo
-              icon={<IdCard size={17} />}
-              label="Admin ID"
-              value={admin.adminId}
-            />
-
-            <ProfileInfo
               icon={<ShieldCheck size={17} />}
               label="Role"
               value={admin.role}
             />
 
-          </div>
+            <ProfileInfo
+              icon={<BadgeCheck size={17} />}
+              label="Account Status"
+              value={admin.status}
+            />
 
+            <ProfileInfo
+              icon={<LockKeyhole size={17} />}
+              label="Login Method"
+              value={admin.authProvider}
+            />
+          </div>
         </div>
 
         {/* Account Information */}
 
         <div className="rounded-xl border border-slate-200 bg-white">
-
           <div className="border-b border-slate-200 px-5 py-5">
-
-            <h2 className="font-semibold text-slate-800">
-              Account
-            </h2>
+            <h2 className="font-semibold text-slate-800">Account</h2>
 
             <p className="mt-1 text-xs text-slate-500">
               Administrator account status.
             </p>
-
           </div>
 
           <div className="space-y-3 p-5">
-
             {/* Status */}
 
             <div className="rounded-lg bg-slate-50 p-4">
-
               <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-500">Status</span>
 
-                <span className="text-sm text-slate-500">
-                  Status
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-medium ${
+                    admin.status === "active"
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {admin.status}
                 </span>
-
-                <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-medium text-white">
-                  Active
-                </span>
-
               </div>
-
             </div>
 
             {/* Role */}
 
             <div className="rounded-lg bg-slate-50 p-4">
-
               <div className="flex items-center justify-between">
-
-                <span className="text-sm text-slate-500">
-                  Access
-                </span>
+                <span className="text-sm text-slate-500">Access</span>
 
                 <span className="text-sm font-medium text-slate-700">
-                  Administrator
+                  {user.role}
                 </span>
-
               </div>
-
             </div>
 
             {/* Change Password */}
@@ -333,13 +297,9 @@ const AdminProfile = () => {
                 hover:bg-slate-50
               "
             >
-              <LockKeyhole
-                size={18}
-                className="text-slate-500"
-              />
+              <LockKeyhole size={18} className="text-slate-500" />
 
               <div>
-
                 <p className="text-sm font-medium text-slate-700">
                   Change Password
                 </p>
@@ -347,15 +307,10 @@ const AdminProfile = () => {
                 <p className="mt-0.5 text-xs text-slate-400">
                   Update your admin password
                 </p>
-
               </div>
-
             </button>
-
           </div>
-
         </div>
-
       </div>
 
       {/* =========================================
@@ -363,19 +318,12 @@ const AdminProfile = () => {
       ========================================== */}
 
       {isEditing && (
-        <dialog
-          open
-          className="modal modal-bottom sm:modal-middle"
-        >
-
+        <dialog open className="modal modal-bottom sm:modal-middle">
           <div className="modal-box max-w-2xl p-0">
-
             {/* Header */}
 
             <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-
               <div>
-
                 <h3 className="text-lg font-semibold text-slate-800">
                   Edit Admin Profile
                 </h3>
@@ -383,7 +331,6 @@ const AdminProfile = () => {
                 <p className="mt-1 text-xs text-slate-500">
                   Update your administrator information.
                 </p>
-
               </div>
 
               <button
@@ -393,19 +340,15 @@ const AdminProfile = () => {
               >
                 <X size={18} />
               </button>
-
             </div>
 
             {/* Form */}
 
             <form onSubmit={handleSave}>
-
               <div className="space-y-5 p-5 sm:p-6">
-
                 {/* Name */}
 
                 <div>
-
                   <label
                     htmlFor="name"
                     className="mb-2 block text-sm font-medium text-slate-700"
@@ -432,13 +375,11 @@ const AdminProfile = () => {
                       focus:border-slate-500
                     "
                   />
-
                 </div>
 
                 {/* Email */}
 
                 <div>
-
                   <label
                     htmlFor="email"
                     className="mb-2 block text-sm font-medium text-slate-700"
@@ -465,13 +406,11 @@ const AdminProfile = () => {
                       focus:border-slate-500
                     "
                   />
-
                 </div>
 
                 {/* Phone */}
 
                 <div>
-
                   <label
                     htmlFor="phone"
                     className="mb-2 block text-sm font-medium text-slate-700"
@@ -498,13 +437,11 @@ const AdminProfile = () => {
                       focus:border-slate-500
                     "
                   />
-
                 </div>
 
                 {/* Department */}
 
                 <div>
-
                   <label
                     htmlFor="department"
                     className="mb-2 block text-sm font-medium text-slate-700"
@@ -531,13 +468,11 @@ const AdminProfile = () => {
                       focus:border-slate-500
                     "
                   />
-
                 </div>
 
                 {/* Admin ID */}
 
                 <div>
-
                   <label
                     htmlFor="adminId"
                     className="mb-2 block text-sm font-medium text-slate-700"
@@ -564,15 +499,12 @@ const AdminProfile = () => {
                       focus:border-slate-500
                     "
                   />
-
                 </div>
-
               </div>
 
               {/* Footer */}
 
               <div className="flex flex-col-reverse gap-3 border-t border-slate-200 px-5 py-4 sm:flex-row sm:justify-end">
-
                 <button
                   type="button"
                   onClick={handleCancel}
@@ -611,11 +543,8 @@ const AdminProfile = () => {
                   <Save size={16} />
                   Save Changes
                 </button>
-
               </div>
-
             </form>
-
           </div>
 
           {/* Backdrop */}
@@ -628,14 +557,10 @@ const AdminProfile = () => {
               handleCancel();
             }}
           >
-            <button type="submit">
-              close
-            </button>
+            <button type="submit">close</button>
           </form>
-
         </dialog>
       )}
-
     </div>
   );
 };
@@ -647,23 +572,17 @@ const AdminProfile = () => {
 const ProfileInfo = ({ icon, label, value }) => {
   return (
     <div className="flex gap-3">
-
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
         {icon}
       </div>
 
       <div className="min-w-0">
-
-        <p className="text-xs text-slate-400">
-          {label}
-        </p>
+        <p className="text-xs text-slate-400">{label}</p>
 
         <p className="mt-1 truncate text-sm font-medium text-slate-700">
           {value}
         </p>
-
       </div>
-
     </div>
   );
 };

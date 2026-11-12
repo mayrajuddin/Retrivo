@@ -1,13 +1,9 @@
-import { Bell, User } from "lucide-react";
+import { Bell } from "lucide-react";
 import { Link } from "react-router";
+import { useAuth } from "../../contexts/AuthContext";
 
 const DashboardHeader = () => {
-  // এখন database/authentication নেই,
-  // তাই temporary user information
-  const user = {
-    name: "Mayraj",
-    email: "mayraj@example.com",
-  };
+  const {user} = useAuth();
 
   return (
     <header className="border-b border-slate-200 bg-white">
@@ -46,17 +42,13 @@ const DashboardHeader = () => {
           >
             {/* Avatar */}
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600">
-              <User size={18} />
+              <img src={user.photoURL} alt={user.name} className="h-full w-full object-cover"/>
             </div>
 
             {/* User Info */}
             <div className="hidden text-left sm:block">
               <p className="text-sm font-semibold text-slate-700">
                 {user.name}
-              </p>
-
-              <p className="text-xs text-slate-400">
-                Student
               </p>
             </div>
           </Link>
