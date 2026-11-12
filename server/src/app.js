@@ -1,8 +1,11 @@
+
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import process from "node:process";
+import authRoutes from "./routes/authRoutes.js";
+
 const app = express();
 
 // Security middleware
@@ -29,6 +32,9 @@ app.get("/api/health", (req, res) => {
     message: "Retrivo backend is running!",
   });
 });
+
+// Authentication routes
+app.use("/api/auth", authRoutes);
 
 // Not found route
 app.use((req, res) => {
