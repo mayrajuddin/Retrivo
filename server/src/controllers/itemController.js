@@ -49,6 +49,8 @@ export const getCategories = async (req, res) => {
 // Create a new item report
 export const createItem = async (req, res) => {
   try {
+    console.log("Request body:", req.body);
+    console.log("Uploaded file:", req.file);
     const {
       title,
       type,

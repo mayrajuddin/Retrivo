@@ -37,6 +37,21 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 //item routes
 app.use("/api/items", itemRoutes);
+
+// Multer and upload error handler
+app.use((err, req, res, next) => {
+  if (err) {
+    console.error("Upload error:", err);
+
+    return res.status(400).json({
+      success: false,
+      message: err.message || "Image upload failed",
+    });
+  }
+
+  next();
+});
+
 // Not found route
 app.use((req, res) => {
   res.status(404).json({

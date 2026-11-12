@@ -11,7 +11,7 @@ const ReportForm = ({
   categoriesError = "",
 }) => {
   const {user}=useAuth();
-  console.log(user);
+  // console.log(user);
   const [formData, setFormData] = useState({
     name: initialData.name || "",
     category: initialData.category || "",
@@ -79,6 +79,7 @@ const ReportForm = ({
         ...formData,
         reporter: formData.reporter ?? user?.name ?? "",
         image: initialData.image || "",
+        imageFile: imageFile,
         contactNumber: formData.contactNumber ?? user?.phone ?? "",
         status: reportType,
       };

@@ -1,5 +1,5 @@
 
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ReportTypeSelector from "../../components/ReportItem/ReportTypeSelector";
 import ReportForm from "../../components/common/ReportForm";
 
@@ -11,70 +11,68 @@ const ReportItem = () => {
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState("");
 
-  // Fetch categories from MongoD
+  // Fetch categories from MongoDB
+  useEffect(() => {
+    let ignore = false;
 
-useEffect(() => {
-  let ignore = false;
+    async function loadCategories() {
+      try {
+        const response = await fetch(`${API_URL}/items/categories`);
+        const data = await response.json();
 
-  async function loadCategories() {
-    try {
-      const response = await fetch(`${API_URL}/items/categories`);
-      const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to load categories");
+        }
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to load categories");
-      }
+        if (!ignore) {
+          setCategories(data.categories || []);
+          setCategoriesError("");
+        }
+      } catch (error) {
+        console.error("Category loading failed:", error);
 
-      if (!ignore) {
-        setCategories(data.categories || []);
-        setCategoriesError("");
-      }
-    } catch (error) {
-      console.error("Category loading failed:", error);
-
-      if (!ignore) {
-        setCategoriesError(
-          error.message || "Unable to load categories."
-        );
-      }
-    } finally {
-      if (!ignore) {
-        setCategoriesLoading(false);
+        if (!ignore) {
+          setCategoriesError(
+            error.message || "Unable to load categories."
+          );
+        }
+      } finally {
+        if (!ignore) {
+          setCategoriesLoading(false);
+        }
       }
     }
-  }
 
-  loadCategories();
+    loadCategories();
 
-  return () => {
-    ignore = true;
-  };
-}, []);
-
-
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   // Submit item report to backend
   const handleSubmit = async (data) => {
     try {
-      const reportData = {
-        title: data.name,
-        type: data.status.toLowerCase(),
-        category: data.category,
-        description: data.description,
-        location: data.location,
-        exact_location: data.exactLocation,
-        report_date: data.date,
-        item_image: "",
-        contact_number: data.contactNumber,
-      };
+      const formData = new FormData();
+
+      formData.append("title", data.name);
+      formData.append("type", data.status.toLowerCase());
+      formData.append("category", data.category);
+      formData.append("description", data.description);
+      formData.append("location", data.location);
+      formData.append("exact_location", data.exactLocation || "");
+      formData.append("report_date", data.date);
+      formData.append("contact_number", data.contactNumber);
+
+      // Attach image if selected
+      if (data.imageFile) {
+        formData.append("item_image", data.imageFile);
+      }
 
       const response = await fetch(`${API_URL}/items`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         credentials: "include",
-        body: JSON.stringify(reportData),
+        body: formData,
       });
 
       const result = await response.json();
@@ -88,7 +86,10 @@ useEffect(() => {
       console.log("Submitted Report:", result.item);
     } catch (error) {
       console.error("Report submission failed:", error);
-      alert(error.message || "Unable to submit your report. Please try again.");
+
+      alert(
+        error.message || "Unable to submit your report. Please try again."
+      );
     }
   };
 
