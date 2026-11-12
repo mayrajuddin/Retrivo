@@ -5,7 +5,7 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import process from "node:process";
 import authRoutes from "./routes/authRoutes.js";
-
+import itemRoutes from "./routes/itemRoutes.js";
 const app = express();
 
 // Security middleware
@@ -35,7 +35,8 @@ app.get("/api/health", (req, res) => {
 
 // Authentication routes
 app.use("/api/auth", authRoutes);
-
+//item routes
+app.use("/api/items", itemRoutes);
 // Not found route
 app.use((req, res) => {
   res.status(404).json({
