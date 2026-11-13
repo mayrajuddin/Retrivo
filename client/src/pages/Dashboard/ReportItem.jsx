@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react";
+import { CheckCircle2, Plus } from "lucide-react";
 import ReportTypeSelector from "../../components/ReportItem/ReportTypeSelector";
 import ReportForm from "../../components/common/ReportForm";
 
@@ -10,6 +11,7 @@ const ReportItem = () => {
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState("");
+  const [submittedItem, setSubmittedItem] = useState(null);
 
   // Fetch categories from MongoDB
   useEffect(() => {
@@ -50,7 +52,7 @@ const ReportItem = () => {
     };
   }, []);
 
-  // Submit item report to backend
+  // Submit item report
   const handleSubmit = async (data) => {
     try {
       const formData = new FormData();
@@ -64,7 +66,6 @@ const ReportItem = () => {
       formData.append("report_date", data.date);
       formData.append("contact_number", data.contactNumber);
 
-      // Attach image if selected
       if (data.imageFile) {
         formData.append("item_image", data.imageFile);
       }
@@ -81,51 +82,107 @@ const ReportItem = () => {
         throw new Error(result.message || "Failed to submit report");
       }
 
-      alert(result.message || "Item report submitted successfully!");
+      // Show success message instead of alert
+      setSubmittedItem(result.item);
 
       console.log("Submitted Report:", result.item);
+
     } catch (error) {
       console.error("Report submission failed:", error);
-
-      alert(
-        error.message || "Unable to submit your report. Please try again."
-      );
+      throw error;
     }
+  };
+
+  // Start another report
+  const handleNewReport = () => {
+    setSubmittedItem(null);
+    setReportType("Lost");
   };
 
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-          <ReportTypeSelector
-            reportType={reportType}
-            setReportType={setReportType}
-          />
 
-          {categoriesError && (
-            <div className="mb-5 rounded-lg border border-red-200 bg-red-50 p-4">
-              <p className="text-sm text-red-700">
-                {categoriesError}
+          {submittedItem ? (
+            // Success Message
+            <div className="py-10 text-center">
+
+              <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-green-50">
+                <CheckCircle2
+                  size={44}
+                  className="text-green-600"
+                />
+              </div>
+
+              <h2 className="text-2xl font-bold text-slate-800">
+                Report Submitted Successfully!
+              </h2>
+
+              <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-500">
+                Your {submittedItem.type} item report has been submitted.
+                Thank you for helping our campus community!
               </p>
+
+              <div className="mx-auto mt-6 max-w-sm rounded-xl border border-slate-200 bg-slate-50 p-4 text-left">
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                  Submitted Item
+                </p>
+
+                <p className="mt-1 font-semibold text-slate-800">
+                  {submittedItem.title}
+                </p>
+
+                <p className="mt-1 text-sm capitalize text-slate-500">
+                  {submittedItem.type} Item
+                </p>
+              </div>
 
               <button
                 type="button"
-                onClick={() => window.location.reload()}
-                className="mt-2 text-sm font-semibold text-red-700 underline"
+                onClick={handleNewReport}
+                className="mt-8 inline-flex items-center gap-2 rounded-lg bg-slate-800 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
               >
-                Try again
+                <Plus size={18} />
+                Report Another Item
               </button>
+
             </div>
+          ) : (
+            // Report Form
+            <>
+              <ReportTypeSelector
+                reportType={reportType}
+                setReportType={setReportType}
+              />
+
+              {categoriesError && (
+                <div className="mb-5 rounded-lg border border-red-200 bg-red-50 p-4">
+                  <p className="text-sm text-red-700">
+                    {categoriesError}
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => window.location.reload()}
+                    className="mt-2 text-sm font-semibold text-red-700 underline"
+                  >
+                    Try again
+                  </button>
+                </div>
+              )}
+
+              <ReportForm
+                reportType={reportType}
+                mode="create"
+                onSubmit={handleSubmit}
+                categories={categories}
+                categoriesLoading={categoriesLoading}
+                categoriesError={categoriesError}
+              />
+            </>
           )}
 
-          <ReportForm
-            reportType={reportType}
-            mode="create"
-            onSubmit={handleSubmit}
-            categories={categories}
-            categoriesLoading={categoriesLoading}
-            categoriesError={categoriesError}
-          />
         </div>
       </section>
     </main>

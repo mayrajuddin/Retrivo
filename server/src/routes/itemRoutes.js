@@ -3,8 +3,8 @@ import express from "express";
 import {
   createItem,
   getCategories,
+  getMyReports
 } from "../controllers/itemController.js";
-
 import { authenticateUser } from "../middleware/authMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
 
@@ -20,5 +20,6 @@ router.post(
   upload.single("item_image"),
   createItem
 );
-
+// Get logged-in user's reports
+router.get("/my-reports", authenticateUser, getMyReports);
 export default router;

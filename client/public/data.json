@@ -1,28 +1,5 @@
 [
-  {
-    "id": 1,
-    "name": "Black Backpack",
-    "category": "Bag",
-    "location": "Campus Area",
-    "exactLocation": "Central Library - 2nd Floor",
-    "date": "Aug 10, 2026",
-    "status": "Found",
-    "reporter": "Rahim Ahmed",
-    "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
-    "description": "A black backpack with a small blue keychain attached to the side. The bag contains some books and personal belongings."
-  },
-  {
-    "id": 2,
-    "name": "Student ID Card",
-    "category": "ID Card",
-    "location": "Campus Area",
-    "exactLocation": "Cafeteria - Ground Floor",
-    "date": "Aug 09, 2026",
-    "status": "Found",
-    "reporter": "Nusrat Jahan",
-    "image": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80",
-    "description": "A student identification card found on campus."
-  },
+  
   {
     "id": 3,
     "name": "Black Wallet",

@@ -147,3 +147,27 @@ export const createItem = async (req, res) => {
     });
   }
 };
+
+// Get reports created by the logged-in user
+export const getMyReports = async (req, res) => {
+  try {
+    const reports = await Item.find({
+      user_id: req.user._id,
+    })
+      .populate("category_id", "category_name")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: reports.length,
+      reports,
+    });
+  } catch (error) {
+    console.error("Get my reports error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch your reports",
+    });
+  }
+};
