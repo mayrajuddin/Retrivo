@@ -1,156 +1,180 @@
-import { useMemo, useState } from "react";
+
+import { useEffect, useMemo, useState } from "react";
 import {
   Search,
   Eye,
-  Check,
   X,
   SlidersHorizontal,
   MapPin,
   CalendarDays,
   User,
   Package,
+  Trash2,
 } from "lucide-react";
+
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const Reports = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
 
-  const [selectedReport, setSelectedReport] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
 
-  const [reports, setReports] = useState([
-    {
-      id: 1,
-      name: "Black Backpack",
-      category: "Bag",
-      type: "Found",
-      location: "Campus Area",
-      exactLocation: "Central Library - 2nd Floor",
-      date: "Aug 20, 2026",
-      reporter: "Rahim Ahmed",
-      reporterEmail: "rahim@example.com",
-      status: "Pending",
-      image:
-        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
-      description:
-        "A black backpack with a small blue keychain attached to the side. The bag contains some books and personal belongings.",
-    },
-    {
-      id: 2,
-      name: "Student ID Card",
-      category: "ID Card",
-      type: "Lost",
-      location: "Campus Area",
-      exactLocation: "Cafeteria - Ground Floor",
-      date: "Aug 19, 2026",
-      reporter: "Nusrat Jahan",
-      reporterEmail: "nusrat@example.com",
-      status: "Approved",
-      image:
-        "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80",
-      description: "A student identification card was lost on campus.",
-    },
-    {
-      id: 3,
-      name: "Black Wallet",
-      category: "Wallet",
-      type: "Lost",
-      location: "Campus Area",
-      exactLocation: "Academic Building - Room 204",
-      date: "Aug 18, 2026",
-      reporter: "Sakib Hasan",
-      reporterEmail: "sakib@example.com",
-      status: "Pending",
-      image:
-        "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80",
-      description:
-        "A black leather wallet that was lost somewhere around the academic building.",
-    },
-    {
-      id: 4,
-      name: "Silver Key",
-      category: "Keys",
-      type: "Found",
-      location: "Campus Area",
-      exactLocation: "Main Gate Waiting Area",
-      date: "Aug 17, 2026",
-      reporter: "Tanvir Rahman",
-      reporterEmail: "tanvir@example.com",
-      status: "Rejected",
-      image:
-        "https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=800&q=80",
-      description: "A silver key found near the campus entrance.",
-    },
-    {
-      id: 5,
-      name: "Wireless Earbuds",
-      category: "Electronics",
-      type: "Lost",
-      location: "Campus Area",
-      exactLocation: "Computer Lab - 3rd Floor",
-      date: "Aug 16, 2026",
-      reporter: "Afsana Karim",
-      reporterEmail: "afsana@example.com",
-      status: "Pending",
-      image:
-        "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?auto=format&fit=crop&w=800&q=80",
-      description: "Wireless earbuds in a small charging case.",
-    },
-    {
-      id: 6,
-      name: "Blue Water Bottle",
-      category: "Personal Item",
-      type: "Found",
-      location: "Campus Area",
-      exactLocation: "Sports Ground",
-      date: "Aug 15, 2026",
-      reporter: "Mahin Chowdhury",
-      reporterEmail: "mahin@example.com",
-      status: "Approved",
-      image:
-        "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=800&q=80",
-      description: "A blue reusable water bottle found on campus.",
-    },
-  ]);
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [reports, setReports] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Get approved reports from database
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetch(`${API_URL}/items/admin/approved-reports`, {
+      method: "GET",
+      credentials: "include",
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to load reports");
+        }
+
+        return data;
+      })
+      .then((data) => {
+        setReports(data.reports || []);
+        setError("");
+      })
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          console.error("Fetch approved reports error:", err);
+          setError(err.message || "Unable to load reports");
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  // Format date
+  const formatDate = (date) => {
+    if (!date) return "N/A";
+
+    return new Date(date).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  // Format text
+  const formatStatus = (status) => {
+    if (!status) return "Active";
+
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  };
 
   // Filter reports
   const filteredReports = useMemo(() => {
     return reports.filter((report) => {
+      const name = report.title || "";
+      const reporter = report.user_id?.name || "";
+      const category = report.category_id?.category_name || "";
+
       const matchesSearch =
-        report.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        report.reporter.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        report.category.toLowerCase().includes(searchTerm.toLowerCase());
+        name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reporter.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        category.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesType =
-        typeFilter === "All" || report.type === typeFilter;
+        typeFilter === "All" ||
+        report.type === typeFilter.toLowerCase();
 
       const matchesStatus =
-        statusFilter === "All" || report.status === statusFilter;
+        statusFilter === "All" ||
+        (report.itemStatus || "active") === statusFilter.toLowerCase();
 
       return matchesSearch && matchesType && matchesStatus;
     });
   }, [reports, searchTerm, typeFilter, statusFilter]);
 
-  // Update report status
-  const updateStatus = (id, newStatus) => {
-    setReports((previousReports) =>
-      previousReports.map((report) =>
-        report.id === id
-          ? { ...report, status: newStatus }
-          : report
-      )
+  // Delete approved report
+  const handleDeleteReport = async (reportId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to permanently delete this report?"
     );
 
-    setSelectedReport((previousReport) =>
-      previousReport
-        ? { ...previousReport, status: newStatus }
-        : previousReport
-    );
+    if (!confirmed) return;
+
+    try {
+      setDeletingId(reportId);
+      setDeleteError("");
+
+      const response = await fetch(
+        `${API_URL}/items/admin/approved-reports/${reportId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete report");
+      }
+
+      // Remove report from the list
+      setReports((previousReports) =>
+        previousReports.filter((report) => report._id !== reportId)
+      );
+
+      // Close modal if the deleted report is selected
+      setSelectedReport((previousReport) =>
+        previousReport?._id === reportId ? null : previousReport
+      );
+
+      alert("Report deleted successfully!");
+    } catch (err) {
+      console.error("Delete report error:", err);
+
+      setDeleteError(err.message || "Unable to delete report");
+      alert(err.message || "Unable to delete report");
+    } finally {
+      setDeletingId(null);
+    }
   };
+
+  // Status badge style
+  const getStatusStyle = (status) => {
+    if (status === "resolved") {
+      return "bg-slate-800 text-white";
+    }
+
+    return "bg-slate-100 text-slate-600";
+  };
+
+  // Loading
+  if (loading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <span className="loading loading-spinner loading-lg text-slate-700"></span>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-7xl">
-
       {/* Page Header */}
       <div className="mb-8">
         <p className="text-sm font-medium text-slate-500">
@@ -162,15 +186,30 @@ const Reports = () => {
         </h2>
 
         <p className="mt-2 text-sm text-slate-500">
-          Review and manage lost and found item reports.
+          View all approved lost and found item reports.
         </p>
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+          <p className="text-sm text-red-600">{error}</p>
+          <p className="mt-1 text-xs text-red-500">
+            Please refresh the page and try again.
+          </p>
+        </div>
+      )}
+
+      {/* Delete Error */}
+      {deleteError && (
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+          <p className="text-sm text-red-600">{deleteError}</p>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="mb-6 rounded-xl border border-slate-200 bg-white p-4">
-
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-
           {/* Search */}
           <div className="relative w-full lg:max-w-md">
             <Search
@@ -189,49 +228,45 @@ const Reports = () => {
 
           {/* Filters */}
           <div className="flex flex-col gap-3 sm:flex-row">
-
             {/* Type */}
             <div className="flex items-center gap-2">
               <SlidersHorizontal
                 size={17}
-                className="text-slate-400 "
+                className="text-slate-400"
               />
 
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="pr-7 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-600 outline-none focus:border-slate-400"
+                className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 pr-7 text-sm text-slate-600 outline-none focus:border-slate-400"
               >
-                <option value="All" className="">All Types</option>
+                <option value="All">All Types</option>
                 <option value="Lost">Lost</option>
                 <option value="Found">Found</option>
               </select>
             </div>
 
-            {/* Status */}
+            {/* Item Status */}
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-lg border border-slate-200 bg-white pr-6 px-3 py-2.5 text-sm text-slate-600 outline-none focus:border-slate-400"
+              className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 pr-6 text-sm text-slate-600 outline-none focus:border-slate-400"
             >
               <option value="All">All Status</option>
-              <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
-              <option value="Rejected">Rejected</option>
+              <option value="active">Active</option>
+              <option value="resolved">Resolved</option>
             </select>
-
           </div>
         </div>
       </div>
 
       {/* Reports Table */}
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-
         {/* Table Header */}
         <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 sm:px-6">
           <div>
             <h3 className="font-semibold text-slate-800">
-              All Reports
+              Approved Reports
             </h3>
 
             <p className="mt-1 text-xs text-slate-400">
@@ -242,31 +277,14 @@ const Reports = () => {
 
         {/* Desktop Table */}
         <div className="hidden overflow-x-auto md:block">
-
           <table className="w-full text-left">
-
             <thead>
               <tr className="border-b border-slate-100 text-xs uppercase tracking-wide text-slate-400">
-                <th className="px-6 py-4 font-medium">
-                  Item
-                </th>
-
-                <th className="px-6 py-4 font-medium">
-                  Type
-                </th>
-
-                <th className="px-6 py-4 font-medium">
-                  Reporter
-                </th>
-
-                <th className="px-6 py-4 font-medium">
-                  Date
-                </th>
-
-                <th className="px-6 py-4 font-medium">
-                  Status
-                </th>
-
+                <th className="px-6 py-4 font-medium">Item</th>
+                <th className="px-6 py-4 font-medium">Type</th>
+                <th className="px-6 py-4 font-medium">Reporter</th>
+                <th className="px-6 py-4 font-medium">Date</th>
+                <th className="px-6 py-4 font-medium">Status</th>
                 <th className="px-6 py-4 text-right font-medium">
                   Action
                 </th>
@@ -274,34 +292,33 @@ const Reports = () => {
             </thead>
 
             <tbody className="divide-y divide-slate-100">
-
               {filteredReports.length > 0 ? (
                 filteredReports.map((report) => (
                   <tr
-                    key={report.id}
+                    key={report._id}
                     className="transition hover:bg-slate-50"
                   >
-
                     {/* Item */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-
                         <img
-                          src={report.image}
-                          alt={report.name}
+                          src={
+                            report.item_image ||
+                            "https://placehold.co/80x80?text=No+Image"
+                          }
+                          alt={report.title}
                           className="h-10 w-10 rounded-lg object-cover"
                         />
 
                         <div>
                           <p className="text-sm font-semibold text-slate-700">
-                            {report.name}
+                            {report.title}
                           </p>
 
                           <p className="text-xs text-slate-400">
-                            {report.category}
+                            {report.category_id?.category_name || "N/A"}
                           </p>
                         </div>
-
                       </div>
                     </td>
 
@@ -309,44 +326,39 @@ const Reports = () => {
                     <td className="px-6 py-4">
                       <span
                         className={`rounded-full px-3 py-1 text-xs font-medium ${
-                          report.type === "Lost"
+                          report.type === "lost"
                             ? "bg-slate-100 text-slate-600"
                             : "bg-slate-800 text-white"
                         }`}
                       >
-                        {report.type}
+                        {formatStatus(report.type)}
                       </span>
                     </td>
 
                     {/* Reporter */}
                     <td className="px-6 py-4 text-sm text-slate-500">
-                      {report.reporter}
+                      {report.user_id?.name || "Unknown"}
                     </td>
 
                     {/* Date */}
                     <td className="px-6 py-4 text-sm text-slate-500">
-                      {report.date}
+                      {formatDate(report.report_date)}
                     </td>
 
-                    {/* Status */}
+                    {/* Item Status */}
                     <td className="px-6 py-4">
                       <span
-                        className={`rounded-full px-3 py-1 text-xs font-medium ${
-                          report.status === "Approved"
-                            ? "bg-slate-800 text-white"
-                            : report.status === "Rejected"
-                            ? "bg-slate-100 text-slate-400"
-                            : "bg-slate-100 text-slate-600"
-                        }`}
+                        className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusStyle(
+                          report.itemStatus
+                        )}`}
                       >
-                        {report.status}
+                        {formatStatus(report.itemStatus)}
                       </span>
                     </td>
 
                     {/* Action */}
                     <td className="px-6 py-4">
-                      <div className="flex justify-end">
-
+                      <div className="flex justify-end gap-2">
                         <button
                           type="button"
                           onClick={() => setSelectedReport(report)}
@@ -356,17 +368,22 @@ const Reports = () => {
                           View
                         </button>
 
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteReport(report._id)}
+                          disabled={deletingId === report._id}
+                          className="flex items-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <Trash2 size={15} />
+                          {deletingId === report._id ? "Deleting..." : "Delete"}
+                        </button>
                       </div>
                     </td>
-
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td
-                    colSpan="6"
-                    className="px-6 py-12 text-center"
-                  >
+                  <td colSpan="6" className="px-6 py-12 text-center">
                     <p className="text-sm font-medium text-slate-600">
                       No reports found
                     </p>
@@ -377,82 +394,82 @@ const Reports = () => {
                   </td>
                 </tr>
               )}
-
             </tbody>
-
           </table>
         </div>
 
         {/* Mobile Cards */}
         <div className="divide-y divide-slate-100 md:hidden">
-
           {filteredReports.length > 0 ? (
             filteredReports.map((report) => (
-              <div
-                key={report.id}
-                className="p-5"
-              >
+              <div key={report._id} className="p-5">
                 <div className="flex gap-3">
-
                   <img
-                    src={report.image}
-                    alt={report.name}
+                    src={
+                      report.item_image ||
+                      "https://placehold.co/80x80?text=No+Image"
+                    }
+                    alt={report.title}
                     className="h-14 w-14 rounded-lg object-cover"
                   />
 
                   <div className="min-w-0 flex-1">
-
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <h4 className="text-sm font-semibold text-slate-700">
-                          {report.name}
+                          {report.title}
                         </h4>
 
                         <p className="mt-1 text-xs text-slate-400">
-                          {report.category}
+                          {report.category_id?.category_name || "N/A"}
                         </p>
                       </div>
 
                       <span
                         className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${
-                          report.type === "Lost"
+                          report.type === "lost"
                             ? "bg-slate-100 text-slate-600"
                             : "bg-slate-800 text-white"
                         }`}
                       >
-                        {report.type}
+                        {formatStatus(report.type)}
                       </span>
                     </div>
 
                     <p className="mt-2 text-xs text-slate-500">
-                      Reported by {report.reporter}
+                      Reported by {report.user_id?.name || "Unknown"}
                     </p>
 
-                    <div className="mt-3 flex items-center justify-between">
-
+                    <div className="mt-3 flex items-center justify-between gap-2">
                       <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                          report.status === "Approved"
-                            ? "bg-slate-800 text-white"
-                            : report.status === "Rejected"
-                            ? "bg-slate-100 text-slate-400"
-                            : "bg-slate-100 text-slate-600"
-                        }`}
+                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${getStatusStyle(
+                          report.itemStatus
+                        )}`}
                       >
-                        {report.status}
+                        {formatStatus(report.itemStatus)}
                       </span>
 
-                      <button
-                        type="button"
-                        onClick={() => setSelectedReport(report)}
-                        className="flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-900"
-                      >
-                        <Eye size={15} />
-                        View
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedReport(report)}
+                          className="flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-900"
+                        >
+                          <Eye size={15} />
+                          View
+                        </button>
 
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteReport(report._id)}
+                          disabled={deletingId === report._id}
+                          className="flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-800 disabled:opacity-50"
+                        >
+                          <Trash2 size={15} />
+                          {deletingId === report._id ? "Deleting..." : "Delete"}
+                        </button>
+                      </div>
                     </div>
-
                   </div>
                 </div>
               </div>
@@ -468,27 +485,22 @@ const Reports = () => {
               </p>
             </div>
           )}
-
         </div>
-
       </div>
 
       {/* Report Details Modal */}
       {selectedReport && (
         <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 p-4">
-
           <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-xl">
-
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 sm:px-6">
-
               <div>
                 <h3 className="font-semibold text-slate-800">
                   Report Details
                 </h3>
 
                 <p className="mt-1 text-xs text-slate-400">
-                  Review this report before taking action.
+                  View approved item report details.
                 </p>
               </div>
 
@@ -499,51 +511,48 @@ const Reports = () => {
               >
                 <X size={20} />
               </button>
-
             </div>
 
             {/* Modal Body */}
             <div className="overflow-y-auto">
-
               {/* Image */}
               <div className="bg-slate-50 p-5 sm:p-6">
                 <img
-                  src={selectedReport.image}
-                  alt={selectedReport.name}
+                  src={
+                    selectedReport.item_image ||
+                    "https://placehold.co/600x400?text=No+Image"
+                  }
+                  alt={selectedReport.title}
                   className="mx-auto h-52 w-full max-w-md rounded-xl object-cover"
                 />
               </div>
 
               <div className="space-y-6 p-5 sm:p-6">
-
                 {/* Item Info */}
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-
                     <h4 className="text-xl font-bold text-slate-800">
-                      {selectedReport.name}
+                      {selectedReport.title}
                     </h4>
 
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-medium ${
-                        selectedReport.type === "Lost"
+                        selectedReport.type === "lost"
                           ? "bg-slate-100 text-slate-600"
                           : "bg-slate-800 text-white"
                       }`}
                     >
-                      {selectedReport.type}
+                      {formatStatus(selectedReport.type)}
                     </span>
-
                   </div>
 
                   <p className="mt-1 text-sm text-slate-400">
-                    {selectedReport.category}
+                    {selectedReport.category_id?.category_name || "N/A"}
                   </p>
                 </div>
 
                 {/* Details */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-
                   <div className="flex gap-3">
                     <User
                       size={18}
@@ -551,12 +560,10 @@ const Reports = () => {
                     />
 
                     <div>
-                      <p className="text-xs text-slate-400">
-                        Reporter
-                      </p>
+                      <p className="text-xs text-slate-400">Reporter</p>
 
                       <p className="mt-1 text-sm font-medium text-slate-700">
-                        {selectedReport.reporter}
+                        {selectedReport.user_id?.name || "Unknown"}
                       </p>
                     </div>
                   </div>
@@ -568,12 +575,10 @@ const Reports = () => {
                     />
 
                     <div>
-                      <p className="text-xs text-slate-400">
-                        Report Date
-                      </p>
+                      <p className="text-xs text-slate-400">Report Date</p>
 
                       <p className="mt-1 text-sm font-medium text-slate-700">
-                        {selectedReport.date}
+                        {formatDate(selectedReport.report_date)}
                       </p>
                     </div>
                   </div>
@@ -585,12 +590,12 @@ const Reports = () => {
                     />
 
                     <div>
-                      <p className="text-xs text-slate-400">
-                        Location
-                      </p>
+                      <p className="text-xs text-slate-400">Location</p>
 
                       <p className="mt-1 text-sm font-medium text-slate-700">
-                        {selectedReport.exactLocation}
+                        {selectedReport.exact_location ||
+                          selectedReport.location ||
+                          "N/A"}
                       </p>
                     </div>
                   </div>
@@ -603,15 +608,14 @@ const Reports = () => {
 
                     <div>
                       <p className="text-xs text-slate-400">
-                        Current Status
+                        Item Status
                       </p>
 
                       <p className="mt-1 text-sm font-medium text-slate-700">
-                        {selectedReport.status}
+                        {formatStatus(selectedReport.itemStatus)}
                       </p>
                     </div>
                   </div>
-
                 </div>
 
                 {/* Description */}
@@ -625,63 +629,53 @@ const Reports = () => {
                   </p>
                 </div>
 
-                {/* Reporter Email */}
+                {/* Reporter Contact */}
                 <div className="rounded-lg bg-slate-50 p-4">
                   <p className="text-xs text-slate-400">
                     Reporter Email
                   </p>
 
                   <p className="mt-1 text-sm font-medium text-slate-700">
-                    {selectedReport.reporterEmail}
+                    {selectedReport.user_id?.email || "N/A"}
+                  </p>
+
+                  <p className="mt-3 text-xs text-slate-400">
+                    Contact Number
+                  </p>
+
+                  <p className="mt-1 text-sm font-medium text-slate-700">
+                    {selectedReport.contact_number || "N/A"}
                   </p>
                 </div>
-
               </div>
             </div>
 
             {/* Modal Footer */}
             <div className="flex flex-col-reverse gap-3 border-t border-slate-200 bg-white px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
+              <button
+                type="button"
+                onClick={() => handleDeleteReport(selectedReport._id)}
+                disabled={deletingId === selectedReport._id}
+                className="flex items-center justify-center gap-2 rounded-lg border border-red-200 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Trash2 size={16} />
+                {deletingId === selectedReport._id
+                  ? "Deleting..."
+                  : "Delete Report"}
+              </button>
 
               <button
                 type="button"
                 onClick={() => setSelectedReport(null)}
-                className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                disabled={deletingId === selectedReport._id}
+                className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
               >
                 Close
               </button>
-
-              {selectedReport.status === "Pending" && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      updateStatus(selectedReport.id, "Rejected");
-                    }}
-                    className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
-                  >
-                    <X size={17} />
-                    Reject
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      updateStatus(selectedReport.id, "Approved");
-                    }}
-                    className="flex items-center justify-center gap-2 rounded-lg bg-slate-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700"
-                  >
-                    <Check size={17} />
-                    Approve
-                  </button>
-                </>
-              )}
-
             </div>
-
           </div>
         </div>
       )}
-
     </div>
   );
 };

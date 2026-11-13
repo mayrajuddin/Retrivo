@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+
+import { useEffect, useMemo, useState } from "react";
 import {
   Search,
   Eye,
@@ -7,7 +8,11 @@ import {
   Mail,
   CalendarDays,
   ShieldCheck,
+  Phone,
 } from "lucide-react";
+
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const Users = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -15,86 +20,103 @@ const Users = () => {
   const [statusFilter, setStatusFilter] = useState("All");
 
   const [selectedUser, setSelectedUser] = useState(null);
+  const [users, setUsers] = useState([]);
 
-  const [users] = useState([
-    {
-      id: 1,
-      name: "Rahim Ahmed",
-      email: "rahim@example.com",
-      role: "User",
-      status: "Active",
-      joinedDate: "Aug 05, 2026",
-      reports: 4,
-      claims: 2,
-    },
-    {
-      id: 2,
-      name: "Nusrat Jahan",
-      email: "nusrat@example.com",
-      role: "User",
-      status: "Active",
-      joinedDate: "Aug 04, 2026",
-      reports: 3,
-      claims: 1,
-    },
-    {
-      id: 3,
-      name: "Sakib Hasan",
-      email: "sakib@example.com",
-      role: "User",
-      status: "Active",
-      joinedDate: "Aug 02, 2026",
-      reports: 5,
-      claims: 2,
-    },
-    {
-      id: 4,
-      name: "Tanvir Rahman",
-      email: "tanvir@example.com",
-      role: "User",
-      status: "Suspended",
-      joinedDate: "Jul 28, 2026",
-      reports: 1,
-      claims: 0,
-    },
-    {
-      id: 5,
-      name: "Afsana Karim",
-      email: "afsana@example.com",
-      role: "User",
-      status: "Active",
-      joinedDate: "Jul 25, 2026",
-      reports: 2,
-      claims: 1,
-    },
-    {
-      id: 6,
-      name: "Retrivo Admin",
-      email: "admin@retrivo.com",
-      role: "Admin",
-      status: "Active",
-      joinedDate: "Jul 20, 2026",
-      reports: 0,
-      claims: 0,
-    },
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Fetch all users from database
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetch(`${API_URL}/users/admin`, {
+      method: "GET",
+      credentials: "include",
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to load users");
+        }
+
+        return data;
+      })
+      .then((data) => {
+        setUsers(data.users || []);
+        setError("");
+      })
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          console.error("Fetch users error:", err);
+          setError(err.message || "Unable to load users");
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  // Format date
+  const formatDate = (date) => {
+    if (!date) return "N/A";
+
+    return new Date(date).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  // Format role
+  const formatRole = (role) => {
+    if (!role) return "User";
+
+    return role.charAt(0).toUpperCase() + role.slice(1);
+  };
+
+  // Format account status
+  const formatStatus = (status) => {
+    if (!status) return "Active";
+
+    return status === "blocked" ? "Blocked" : "Active";
+  };
 
   // Filter users
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
+      const name = user.name || "";
+      const email = user.email || "";
+
       const matchesSearch =
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase());
+        name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        email.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesRole =
-        roleFilter === "All" || user.role === roleFilter;
+        roleFilter === "All" ||
+        user.role === roleFilter.toLowerCase();
 
       const matchesStatus =
-        statusFilter === "All" || user.status === statusFilter;
+        statusFilter === "All" ||
+        user.status === statusFilter.toLowerCase();
 
       return matchesSearch && matchesRole && matchesStatus;
     });
   }, [users, searchTerm, roleFilter, statusFilter]);
+
+  // Loading
+  if (loading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <span className="loading loading-spinner loading-lg text-slate-700"></span>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -113,6 +135,16 @@ const Users = () => {
           View and manage registered users of Retrivo.
         </p>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+          <p className="text-sm text-red-600">{error}</p>
+          <p className="mt-1 text-xs text-red-500">
+            Please refresh the page and try again.
+          </p>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="mb-6 rounded-xl border border-slate-200 bg-white p-4">
@@ -144,8 +176,8 @@ const Users = () => {
               className="rounded-lg border border-slate-200 bg-white pr-7 px-3 py-2.5 text-sm text-slate-600 outline-none focus:border-slate-400"
             >
               <option value="All">All Roles</option>
-              <option value="User">User</option>
-              <option value="Admin">Admin</option>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
             </select>
 
             {/* Status */}
@@ -155,8 +187,8 @@ const Users = () => {
               className="rounded-lg border border-slate-200 bg-white pr-4 px-3 py-2.5 text-sm text-slate-600 outline-none focus:border-slate-400"
             >
               <option value="All">All Status</option>
-              <option value="Active">Active</option>
-              <option value="Suspended">Suspended</option>
+              <option value="active">Active</option>
+              <option value="blocked">Blocked</option>
             </select>
 
           </div>
@@ -218,7 +250,7 @@ const Users = () => {
               {filteredUsers.length > 0 ? (
                 filteredUsers.map((user) => (
                   <tr
-                    key={user.id}
+                    key={user._id}
                     className="transition hover:bg-slate-50"
                   >
 
@@ -226,9 +258,17 @@ const Users = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
 
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600">
-                          <User size={18} />
-                        </div>
+                        {user.photoURL ? (
+                          <img
+                            src={user.photoURL}
+                            alt={user.name}
+                            className="h-10 w-10 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600">
+                            <User size={18} />
+                          </div>
+                        )}
 
                         <div>
                           <p className="text-sm font-semibold text-slate-700">
@@ -247,35 +287,35 @@ const Users = () => {
                     <td className="px-6 py-4">
                       <span
                         className={`rounded-full px-3 py-1 text-xs font-medium ${
-                          user.role === "Admin"
+                          user.role === "admin"
                             ? "bg-slate-800 text-white"
                             : "bg-slate-100 text-slate-600"
                         }`}
                       >
-                        {user.role}
+                        {formatRole(user.role)}
                       </span>
                     </td>
 
                     {/* Reports */}
                     <td className="px-6 py-4 text-sm text-slate-600">
-                      {user.reports}
+                      {user.reportsCount ?? 0}
                     </td>
 
                     {/* Claims */}
                     <td className="px-6 py-4 text-sm text-slate-600">
-                      {user.claims}
+                      {user.claimsCount ?? 0}
                     </td>
 
                     {/* Status */}
                     <td className="px-6 py-4">
                       <span
                         className={`rounded-full px-3 py-1 text-xs font-medium ${
-                          user.status === "Active"
+                          user.status === "active"
                             ? "bg-slate-800 text-white"
                             : "bg-slate-100 text-slate-400"
                         }`}
                       >
-                        {user.status}
+                        {formatStatus(user.status)}
                       </span>
                     </td>
 
@@ -325,14 +365,22 @@ const Users = () => {
           {filteredUsers.length > 0 ? (
             filteredUsers.map((user) => (
               <div
-                key={user.id}
+                key={user._id}
                 className="p-5"
               >
                 <div className="flex gap-3">
 
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600">
-                    <User size={19} />
-                  </div>
+                  {user.photoURL ? (
+                    <img
+                      src={user.photoURL}
+                      alt={user.name}
+                      className="h-11 w-11 shrink-0 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600">
+                      <User size={19} />
+                    </div>
+                  )}
 
                   <div className="min-w-0 flex-1">
 
@@ -350,12 +398,12 @@ const Users = () => {
 
                       <span
                         className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${
-                          user.role === "Admin"
+                          user.role === "admin"
                             ? "bg-slate-800 text-white"
                             : "bg-slate-100 text-slate-600"
                         }`}
                       >
-                        {user.role}
+                        {formatRole(user.role)}
                       </span>
 
                     </div>
@@ -364,11 +412,11 @@ const Users = () => {
 
                       <div className="flex gap-4 text-xs text-slate-400">
                         <span>
-                          Reports: {user.reports}
+                          Reports: {user.reportsCount ?? 0}
                         </span>
 
                         <span>
-                          Claims: {user.claims}
+                          Claims: {user.claimsCount ?? 0}
                         </span>
                       </div>
 
@@ -437,9 +485,17 @@ const Users = () => {
               {/* User Profile */}
               <div className="flex items-center gap-4">
 
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-800 text-white">
-                  <User size={24} />
-                </div>
+                {selectedUser.photoURL ? (
+                  <img
+                    src={selectedUser.photoURL}
+                    alt={selectedUser.name}
+                    className="h-14 w-14 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-800 text-white">
+                    <User size={24} />
+                  </div>
+                )}
 
                 <div>
                   <h4 className="text-lg font-bold text-slate-800">
@@ -466,7 +522,7 @@ const Users = () => {
                   </div>
 
                   <p className="mt-2 text-sm font-semibold text-slate-700">
-                    {selectedUser.role}
+                    {formatRole(selectedUser.role)}
                   </p>
                 </div>
 
@@ -480,7 +536,7 @@ const Users = () => {
                   </div>
 
                   <p className="mt-2 text-sm font-semibold text-slate-700">
-                    {selectedUser.status}
+                    {formatStatus(selectedUser.status)}
                   </p>
                 </div>
 
@@ -494,11 +550,25 @@ const Users = () => {
                   </div>
 
                   <p className="mt-2 text-sm font-semibold text-slate-700">
-                    {selectedUser.joinedDate}
+                    {formatDate(selectedUser.createdAt)}
                   </p>
                 </div>
 
                 <div className="rounded-lg bg-slate-50 p-4">
+                  <div className="flex items-center gap-2 text-slate-400">
+                    <Phone size={17} />
+
+                    <p className="text-xs">
+                      Phone Number
+                    </p>
+                  </div>
+
+                  <p className="mt-2 text-sm font-semibold text-slate-700">
+                    {selectedUser.phone || "N/A"}
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-slate-50 p-4 sm:col-span-2">
                   <div className="flex items-center gap-2 text-slate-400">
                     <Mail size={17} />
 
@@ -529,7 +599,7 @@ const Users = () => {
                     </p>
 
                     <p className="mt-1 text-xl font-bold text-slate-800">
-                      {selectedUser.reports}
+                      {selectedUser.reportsCount ?? 0}
                     </p>
                   </div>
 
@@ -539,7 +609,7 @@ const Users = () => {
                     </p>
 
                     <p className="mt-1 text-xl font-bold text-slate-800">
-                      {selectedUser.claims}
+                      {selectedUser.claimsCount ?? 0}
                     </p>
                   </div>
 

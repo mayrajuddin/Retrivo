@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 import process from "node:process";
 import authRoutes from "./routes/authRoutes.js";
 import itemRoutes from "./routes/itemRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import claimRoutes from "./routes/claimRoutes.js";
 const app = express();
 
 // Security middleware
@@ -38,6 +40,7 @@ app.use("/api/auth", authRoutes);
 //item routes
 app.use("/api/items", itemRoutes);
 
+app.use("/api/users", userRoutes);
 // Multer and upload error handler
 app.use((err, req, res, next) => {
   if (err) {
@@ -51,6 +54,7 @@ app.use((err, req, res, next) => {
 
   next();
 });
+app.use("/api/claims", claimRoutes);
 
 // Not found route
 app.use((req, res) => {

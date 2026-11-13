@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 
 const claimSchema = new mongoose.Schema(
@@ -32,6 +31,22 @@ const claimSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    lost_location: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    lost_date: {
+      type: Date,
+      required: true,
+    },
+
+    lost_time: {
+      type: String,
+      trim: true,
+      default: "",
+    },
 
     phone: {
       type: String,
@@ -63,7 +78,7 @@ const claimSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Claim = mongoose.model("Claim", claimSchema);

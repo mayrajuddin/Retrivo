@@ -362,6 +362,7 @@ useEffect(() => {
               selectedItem={selectedItem}
               closeModal={() => setSelectedItem(null)}
               isLoggedIn={true}
+              viewMode="my-report"
             />
           )}
         </>

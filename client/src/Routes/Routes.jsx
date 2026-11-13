@@ -30,6 +30,7 @@ import { itemsLoader } from "./DataLoad/loadData";
 
 import ProtectedRoute from "../routes/ProtectedRoute";
 import AdminRoute from "../routes/AdminRoute";
+import ManageReports from "../pages/Admin/ManageReports";
 
 export const router = createBrowserRouter([
   // =========================
@@ -171,6 +172,10 @@ export const router = createBrowserRouter([
               {
                 index: true,
                 Component: AdminHome,
+              },
+              {
+                path: "manage-reports",
+                Component: ManageReports,
               },
               {
                 path: "reports",
